@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kmeans 测试</title>
+    <script src="/Imagelib.js" ></script>
+    
+</head>
+<body>
+    <h1>K均值聚类算法测试</h1>
+    <p>对K均值聚类算法进行测试，输出每轮的结果；打开控制台可以看到每轮的聚类距离中心。</p>
+
+    <script>
+        var image=null;
+        var cas=document.querySelector('canvas')
+        fetch('../images/dog.png').then(x=>{ return x.blob()}).then(b=>{return Img.fromblob(b)}).then(img=>{
+            img.show();
+            //进行k均值聚类
+            let runningloop=30;
+            let arr=img.toarray()
+            console.log(arr)
+            var [tmpcenters,res]=arr.kmeans(k=4,centers=null,disttype='dist')
+            console.log(res)
+            for (let i=0;i<runningloop;i++){
+                image=Img.fromarray(res.stretch(0,255))
+                image.show()
+                console.log(tmpcenters)
+                let kk=arr.kmeans(k=6,centers=tmpcenters,disttype='dist')
+                tmpcenters=kk[0]
+                res=kk[1]
+            }
+        })
+        
+        
+        
+    </script>
+</body>
+</html>

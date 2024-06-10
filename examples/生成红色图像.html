@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>ImgArray示例</title>
+        <script src="../Imagelib.js" ></script>
+    </head>
+    <body>
+        <h1>生成红色图像</h1>
+        <h1>Generate a Red Image</h1>
+        <p>下面会显示一个256x512的红色图像。代码可从控制台查看！</p>
+        <script>
+            //方法一
+            //生成一个高256，宽512，3通道的数组，默认值是0 
+            let imgarr=new ImgArray({height:256,width:512}); 
+            imgarr.fill(255,0); //将数组的第0个通道填充255，即红色
+            imgarr.show({});      //显示图像
+
+            //方法二，推荐2
+            let img=new Img({height:256,width:512}); 
+            img.fill(255,[0,3]); //将数组的第0个通道填充255，即红色
+            img.show();      //显示图像
+        </script>
+        <h1>练习</h1>
+        <p>请参考代码生成一幅128x256的黄色的图像，并显示在下方。（黄色是由红色和绿色合成的。）</p>
+    </body>
+
+</html>
