@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Img示例</title>
+        <script src="../Imagelib.js" ></script>
+    </head>
+    <body>
+        <h1>打开显示本地图像</h1>
+        <p>点击下方按钮，选择本地图像打开，会在下方显示。</p>
+        <input type="file" id="fileInput">
+        <script>
+            var finput=document.querySelector('#fileInput')
+            finput.addEventListener('change',()=>{
+                let fileobj=finput.files[0];
+                console.log(fileobj);
+                Img.fromfile(fileobj).then((img)=>{
+                    img.show();
+                })
+            })
+        </script>
+    </body>
+
+</html>
