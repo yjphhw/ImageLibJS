@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>ImgArray示例</title>
+        <script src="../Imagelib.js" ></script>
+    </head>
+    <body>
+        <h1>水平叠加</h1>
+        <h1>stack arrays in horizon</h1>
+        <p>下面会显示一个256x512的红色图像。代码可从控制台查看！</p>
+        <script>
+           let a1=new ImgArray().fill(255,0);  //红色
+           let a2=new ImgArray().fill(255,1);  //绿色
+           let a3=new ImgArray().fill(255,2);  //蓝色
+           a1.hstack(a2,a3).show();  //水平叠加，并显示为图像
+        </script>
+    </body>
+
+</html>

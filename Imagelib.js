@@ -1,8 +1,7 @@
 //Imagelib.js v1.1
 //作者：李静，侯伟
-//2024.3.30
+//2024.6.11
 //用于在WEB上进行图像及图像处理的处理
-//提供了ImgArray和Img类,以及接口类nj
 //ImgArray为三维数组，维度分别为高，宽和通道，当通是1，3，4时可以表示为图像，元素类型可以是nj.dtyps中的类型，默认是float32
 //Img为图像，元素为ClampUint8类型，主要提供了图像的读取和显示，以及简单的图像编辑功能。
 //二者的最主要区别就是ImgArray是数组，可以进行许多运算
@@ -10,20 +9,18 @@
 //在图像处理时，需要将Img转为数组后进行，反之，当需要显示是需要将ImgArray转为Img后进行。
 //js代码如何进行混淆加密：https://zhuanlan.zhihu.com/p/648869784   使用obfuscated工具
 
-//Todo:
-//（1）考虑类的继承，学习类的继承的方式，使得Img继承ImgArray，已经初步实现，只需要测试和完善相关API
-//（2）实现一个接口类，nj(number javascript)类比于numpy的np，所有的方法都是静态方法，api直接从numpy中参照
 
-//（3）修改参数传递方法
-//关于参数的传递方法：
+
+//6.11完善了传参方式
+//参考资料：https://zhuanlan.zhihu.com/p/83651953
 //多个不同类型的参数传递时，使用Object，即{}，如下：
 //k={a:3,b:4}  //传参
 //let {a,b}=k  //取参
 //示例：
-//function add({a=3,b=4}) {return a+b}
+//function add({a=3,b=4}={}) {return a+b}   //加入了一个默认值
 //add({b:33})
 //36
-//上述的好处就是不考虑参数的顺序，并且还提供了默认参数
+//上述使用对象传参的好处就是不考虑参数的顺序，并且还提供了默认参数
 
 
 //多个相同类型的参数传递时使用...Array，
@@ -48,8 +45,16 @@
 //进一步了解typedarray的特性
 //二维矩阵运算    #需要考虑，为以后旋转矩阵作好准备
 
-//接口
-class nj {
+//Todo:
+//完善文档，特别是英文文档，以及相关的示例
+
+//利用hstack, vstack以grid的方式显示多幅图像
+
+class ImgArray {
+    //ImageArray 更重要的是数组，提供数组的计算，但是数组的运算支持上偏向于图像处理
+    //后期可以仿照Numpy转为强大的数组计算库
+    //支持多种数据类型初始化，但仅对float32进行了验证，其他类型未验证
+
     static dtypes={
         float32:Float32Array,
         uint8:Uint8Array,
@@ -57,35 +62,28 @@ class nj {
         int32:Int32Array,
         uint32:Uint32Array,
         cuint8:Uint8ClampedArray,
-    }
-
-    //构造数组的函数
-    static array({height=256, width=256,channel=3,lazy=false,dtype='float32'}){
-        return new ImgArray({height,width,channel,lazy,dtype});
-    }
-
-
-}
-
-
-class ImgArray {
-    //ImageArray 更重要的是数组，提供数组的计算，但是数组的运算支持上偏向于图像处理
-    //后期可以仿照Numpy转为强大的数组计算库
-    //只提供一种数据类型float32
+    };
+    
     //只提供三维数组，维度分别是height，width，channel
-    constructor({height=256, width=256,channel=3,lazy=false,dtype='float32'}) {
+    constructor({height=256, width=256,channel=3,lazy=false,dtype='float32'}={}) {
         this.height = height;
         this.width = width;
         this.channel=channel;
         this.numel=height*width*channel;  //元素数量
         this.dtype=dtype
-        this.data=lazy? null: new nj.dtypes[dtype](this.numel);
+        this.data=null;
+        if (lazy==false){
+            this.initarray()
+        }
+    }
+
+    initarray(){
+        if (this.data==null) this.data=new ImgArray.dtypes[this.dtype](this.numel);
     }
 
     get shape(){
-        return [this.height,this.width,this.channel];
+        return {height:this.height,width:this.width,channel:this.channel};
     }
-
     get size(){
         return this.numel;
     }
@@ -103,7 +101,6 @@ class ImgArray {
 
     idxtoelidx(hidx,widx,cidx){
         //从数组索引转为元素索引
-        //return hidx*this.width*this.channel+widx*this.channel+cidx
         return (hidx*this.width+widx)*this.channel+cidx;
     }
 
@@ -125,13 +122,17 @@ class ImgArray {
 
     setel(hidx,widx,cidx,value){
         //根据数组索引设置元素值
-        if (this.checkisvalid(hidx,widx,cidx));
-        this.data[this.idxtoelidx(hidx,widx,cidx)]=value;
+        if (this.checkisvalid(hidx,widx,cidx)){
+            this.data[this.idxtoelidx(hidx,widx,cidx)]=value;
+            return;
+        }
+        console.error('数组元素索引越界')
     }
 
     fill(value=3,cidx=null){
         //数组常值填充，指定某一个通道的数据进行填充
         //cidx可以是null，可以是单个值，可以是数组，一次性设置多个通道
+        this.initarray();
         if (cidx==null) {
             this.data.fill(value);
             return this;
@@ -164,7 +165,6 @@ class ImgArray {
     dstack(...imgars){
         //imgars里为ImgArray实例，应当要具备相同的尺寸
         //将该数组与另外多个高宽一致的数组堆叠为一个新数组
-        //剩余参数语法允许咱们将一个不定数量的参数表示为一个数组。https://zhuanlan.zhihu.com/p/83651953
         let tmpimgarrs=[this,...imgars];
         let channelnum=0;
         let channelmapping=[];
@@ -211,9 +211,49 @@ class ImgArray {
         }
         return arr;
     }
-    //hstack需要
-    //vstack 需要
 
+    hstack(...imgars){
+        //沿宽度方向叠加
+        //需要数组的高和通道数一置，但是该函数不进行检测，由用户来保证
+        let tmpimgarrs=[this,...imgars];
+        let newwidth=0;
+        let widths=[];
+        for (let imgidx=0;imgidx<tmpimgarrs.length;imgidx++){
+            let tmpwidth=tmpimgarrs[imgidx].width;
+            newwidth+=tmpwidth;
+            widths.push(newwidth);
+        }
+        let newimgarr=new ImgArray({height:this.height,width:newwidth,channel:this.channel})
+
+        
+        for (let hidx=0;hidx<newimgarr.height;hidx++){
+            for (let widx=0;widx<newimgarr.width;widx++){
+                let imgidx=widths.map(x=> widx<x ).indexOf(true);
+                let owidx=imgidx>0? widx-widths[imgidx-1] : widx;
+                for (let cidx=0;cidx<newimgarr.channel;cidx++){
+                    newimgarr.setel(hidx,widx,cidx,tmpimgarrs[imgidx].getel(hidx,owidx,cidx));
+                }
+            }
+        }
+        return newimgarr;
+    }
+
+    vstack(...imgars){
+        //沿高度方向叠加
+        //需要数组的宽和通道数一置，但是该函数不进行检测，由用户来保证
+        let tmpimgarrs=[this,...imgars];
+        let newheight=0;
+        for (let imgidx=0;imgidx<tmpimgarrs.length;imgidx++){
+            newheight+=tmpimgarrs[imgidx].width;
+        }
+        let newarray=new ImgArray({height:newheight,width:this.width,channel:this.channel});
+        let offsetidx=0;
+        for (let imgidx=0;imgidx<tmpimgarrs.length;imgidx++){
+            newarray.data.set(tmpimgarrs[imgidx].data, offsetidx);
+            offsetidx+=tmpimgarrs[imgidx].numel;
+        }
+        return newarray;
+    }
     //数组点运算
     vectorize(func){
         //逐元素的运算，function的形式参考array.map接受的回调函数的形式
@@ -222,6 +262,7 @@ class ImgArray {
         return newarr;
     }
 
+    //数组间的运算
     operateArrayOperation(otherArray, func) {
         if ( this.issameshape(otherArray)) {
             let newarr = this.empty(true);
@@ -291,27 +332,27 @@ class ImgArray {
     
     clamp(vmin=0,vmax=255){
         //截断
-        return this.vectorize( (x)=>{ return x<vmin? vmin: (x>vmax? vmax:x)});
+        return this.vectorize( x => x<vmin? vmin: (x>vmax? vmax:x) );
     }
 
     abs(){
         //绝对值
-        return this.vectorize( (x)=>{ return Math.abs(x)});
+        return this.vectorize( x => Math.abs(x));
     }
 
     square(){
         //平方
-        return this.vectorize( (x)=>{ return x*x});
+        return this.vectorize( x => x*x);
     }
 
     pow(value){
         //幂运算
-        return this.vectorize( (x)=>{ return Math.pow(x,value)});
+        return this.vectorize( x => Math.pow(x,value) );
     }
 
     relu(value=0){
         //relu函数
-        return this.vectorize( (x)=>{ return x< value? value: x });
+        return this.vectorize( x =>  x< value? value: x );
     }
 
     threshold(threshold=100,method='binary',maxval=255){
@@ -344,22 +385,22 @@ class ImgArray {
             if(x<lower) x=lower;
             return (x-lower)/(upper-lower)*(vmax-vmin)+vmin;
         }
-        return this.vectorize(func)
+        return this.vectorize(func);
     }
 
     stretch(vmin=0,vmax=255){
         //拉伸到指定的数值范围内
-        let minv=this.min()
-        let maxv=this.max()
+        let minv=this.min();
+        let maxv=this.max();
         if (minv==maxv){
-            return this.copy() } 
+            return this.copy().fill(128); } 
         else{
-            return this.vectorize( (x)=>{return (x-minv)/(maxv-minv)*(vmax-vmin)+vmin})
+            return this.vectorize( (x)=>{return (x-minv)/(maxv-minv)*(vmax-vmin)+vmin});
         }
     }
     
     pad(margin=[1,2,3,4],fillvalue=0){
-        //对高和宽的扩边操作,顺序是左上右下
+        //对高和宽进行常数填充的扩边操作,顺序是左上右下
         let [lp,tp,rp,bp]=margin;
         let newheight=this.height+tp+bp;
         let newwidth=this.width+lp+rp;
@@ -428,7 +469,7 @@ class ImgArray {
     }
 
     apply_along_channel(func){
-        //沿通道的运算，func为一回调函数接收一个一维数组
+        //沿通道的运算，func为一回调函数接收一个一维数组，返回一个数值
         let outimgarr=new ImgArray({height:this.height,width:this.width,channel:1});
         for (let idxh=0; idxh<this.height;idxh++){
             for (let idxw=0;idxw<this.width;idxw++){
@@ -468,8 +509,8 @@ class ImgArray {
             return this.apply_along_channel(func)
         }
         let minv=this.data[0];
-        this.data.forEach( (x)=>{ if(x<minv) minv=x})
-        return minv
+        this.data.forEach( (x)=>{ if(x<minv) minv=x});
+        return minv;
     }
 
     linearc(weights=[1,2,3],bais=0){
@@ -486,7 +527,7 @@ class ImgArray {
     }
 
     conv2d(weights=[[1/9,1/9,1/9],[1/9,1/9,1/9],[1/9,1/9,1/9]],bias=0,fillvalue=0){
-        //卷积运算
+        //卷积运算，只对通道数为1的数组有效
         //weights卷积
         let size=[weights.length,weights[0].length]
         let nb=this.neighbor(size,fillvalue)
@@ -494,7 +535,7 @@ class ImgArray {
     }
 
     median(sizes=[3,3],fillvalue=0){
-        //中值滤波
+        //中值滤波，对通道数为1的数组结果正确
         let tmparr=this.neighbor(sizes,fillvalue)
         function calcmedian(arr) {
             arr.sort((a, b) => a - b);
@@ -920,14 +961,15 @@ class ImgArray {
         return res;
     }
     
-    show({vmin=0,vmax=255,cas=null}){
+    show({vmin=0,vmax=255,cas=null}={}){
         //当数组为图像时，直接在网页中显示图像，方便观察
         //与matploblib的imshow很相似
         let data=this.span(vmin,vmax,0,255);
-        //if (this.channel==1 || this.channel==3 || this.channel==4){
+        console.log(data)
         if ([1,3,4].includes(this.channel)){
             let img=Img.fromarray(data);
             img.show(cas);
+            return img;   //返回显示的图像对象，从而可以调用其方法
         }
         else 
             console.error('数组的通道数不正确，当通道数是1, 3, 或 4时才可以显示为图像！')
@@ -935,14 +977,13 @@ class ImgArray {
 }
 
 class Img extends ImgArray{
-    //Img 继承自ImgArray类，但是只限于图像的存取和简单变换
+    //Img 继承自ImgArray类，虽然支持ImgArray的所有方法，但是不保证运行正确，
+    //更主要的是用于图像的存取和简单变换
     //Img 本身就是图像
     //Img的图像类型只支持RGBA排列一种
-    constructor({height=256,width=256,lazy=false}) {
+    constructor({height=256,width=256,lazy=false}={}) {
         //调用ImgArray完成初始化
-        super({height,width,channel:4,lazy:true,dtype:'cuint8'})
-        //默认初始化实际的数据
-        this.data=lazy ? null: new Uint8ClampedArray(this.height*this.width*4); 
+        super({height,width,channel:4,lazy,dtype:'cuint8'})
     }
 
     static fromarray(imgarray){
@@ -1306,7 +1347,7 @@ class Img extends ImgArray{
         this.data = ctx.getImageData(0, 0, this.width, this.height).data;
     }
 
-    drawtext(x=50, y=50, text='Hello', color='red', linewidth=2, fontSize=20){
+    drawtext({x=50, y=50, text='Hello', color='red', linewidth=2, fontSize=20}={}){
         //在图像上绘制文字
         let canvasele = document.createElement('canvas');
         canvasele.width = this.width;
