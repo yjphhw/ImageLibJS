@@ -4,18 +4,20 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kmeans 测试</title>
+    <title>KMeans Clustering</title>
     <script src="/Imagelib.js" ></script>
     
 </head>
 <body>
-    <h1>K均值聚类算法测试</h1>
-    <p>对K均值聚类算法进行测试，输出每轮的结果；打开控制台可以看到每轮的聚类距离中心。</p>
+    <h1>KMeans Clustering</h1>
+    <h1>K均值聚类算法</h1>
+    <p>对图像进行K均值聚类算法，输出每轮的结果；打开控制台可以看到每轮的聚类距离中心。</p>
 
     <script>
         var image=null;
         var cas=document.querySelector('canvas')
-        fetch('../images/dog.png').then(x=>{ return x.blob()}).then(b=>{return Img.fromblob(b)}).then(img=>{
+        Img.fromurl('../images/dog.png').then(img=>{
+        //fetch('../images/dog.png').then(x=>{ return x.blob()}).then(b=>{return Img.fromblob(b)}).then(img=>{
             img.show();
             //进行k均值聚类
             let runningloop=30;

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>create chessboard</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>Create Chessboard</h1>
+    <h1>创建棋盘</h1>
+    <p>In this example, a chessboard image is produced, and introduce the ImgArray methods:
+        dstack(),app_along_axis()
+        and an array generate static method meshgrid()</p>
+    </p>
+    <p>Acknowledgement: the following examples are adapted from :<a
+            href="https://rationaltools.org/tools/image-editor/editor.html"
+            target="_blank">https://rationaltools.org/tools/image-editor/editor.html</a></p>
+    <script>
+        let [y, x] = ImgArray.meshgrid([0, 512], [0, 512]);
+        y.show({ vmin: 0, vmax: 512 });
+        x.show({ vmin: 0, vmax: 512 });
+        let z = y.dstack(x);
+        //the following examples are adapted from :https://rationaltools.org/tools/image-editor/editor.html
+        //chessboard example
+        let size = 16;
+        let chessboard = z.apply_along_channel((v) => (Math.floor(v[0] / size) % 2) === (Math.floor(v[1] / size) % 2) ? 255 : 0)
+        chessboard.show();
+
+        //spiral example
+        let { height, width } = z.shape;
+        let spiral = z.apply_along_channel((v) => {
+            let [x, y] = v;
+            const dx = x - width / 2, dy = y - height / 2;
+            const angle = Math.atan2(dx, dy);
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            return 127.5 + 127.5 * Math.sin(3 * angle + 0.1 * distance);
+        });
+        spiral.show();
+
+        //fraction example
+        const re = -0.4, im = 0.6;
+        const iterations = 128;
+        let fraction = z.apply_along_channel((v) => {
+            let [x0, y0] = v;
+            // Map pixel space to [-2, 2]x[-2, 2] space
+            let x = -2 + 4 * x0 / width, y = -2 + 4 * y0 / width + 2 * (width - height) / width;
+            for (let i = 0; i < iterations; i++) {
+                // Return when iteration diverges far enough from origin
+                if (x * x + y * y > 4) {
+                    return 255 * i / iterations;
+                }
+                // Compute next step
+                const newx = x * x - y * y + re;
+                y = 2 * x * y + im;
+                x = newx;
+            }
+            return 0;
+        });
+        fraction.show();
+
+    </script>
+</body>
+
+</html>

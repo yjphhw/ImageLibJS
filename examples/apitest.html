@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImgArray and Img Testing</title>
+    <style>
+        #floatpanel {
+            position: fixed;
+            bottom: 20%; /* 距离底部的距离 */
+            right: 0%; /* 距离右侧的距离 */
+            z-index: 999; /* 设置其它元素的z-index，确保按钮在最上层 */
+            border: 1px solid #000;
+        }
+        .canvas-container {
+            display: inline-block;
+        }
+        .canvas-container canvas {
+            display: inline-block;
+            margin-right: 1px;
+        }
+    </style>
+    <script src="/Imagelib.js"></script>
+</head>
+<body>
+    <!--浮动部分-->
+    <div id="floatpanel">
+        <div><canvas id="floatcanvas" width="256" height="256"></canvas></div>
+        <button onclick="createimgarray()" >Create imgarray</button>
+        <button onclick="createimg()">Create img</button>
+        <button onclick="saveimgarr()">As imgArr</button>
+        <button onclick="imgArr.show({cas:floatcanvas})">Show imgArr</button>
+    </div>
+    
+    <h1>ImgArray and Img Testing</h1>
+    <!--每一个部分用div分割-->
+    <div>
+    <h2>Create ImgArray</h2>
+    <p>constructor({height=256, width=256,channel=3,lazy=false,dtype='float32'}):构造函数，创建一个ImgArray对象，参数为高、宽、通道数、创建时不分配空间，数组中元素的类型</p>
+    <label for="widthInput">Width:</label>
+    <input type="number" id="widthInput" min="0"max="100000"value='256'>
+    <label for="heightInput">Height:</label>
+    <input type="number" id="heightInput"min="0"max="100000"value='256'>
+    <label for="channelsInput">Channels:</label>
+    <input type="number" id="channelsInput"min="1"max="4"value='3'>
+    <button onclick="createImgArray()">Create ImgArray</button><br>
+    <textarea id="imgArrayResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+
+    <div>
+    <h2>shape and value</h2>
+    <p>获取ImgArray的形状和具体数值，无需接收参数</p>
+    <button onclick="testImgArrayShape()">Test ImgArray Shape</button>
+    <button onclick="testImgArrayvalue()">Test ImgArray value</button><br>
+    <textarea id="imgTestResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+
+    <div>
+    <h2>ElIdx and Idx</h2>
+    <p>elidxtoidx(elidx):元素索引转换为数组索引，参数为元素索引；idxtoelidx(hidx,widx,cidx):数组索引转换为元素索引，参数为数组高、宽、通道索引</p>
+    <label for="elidxInput">ElIdx:</label>
+    <input type="number" id="elidxInput"min="0"value="100">
+    <button onclick="testElIdxToIdx()">elidxtoidx</button>
+    <label for="hidxInput">hidx：</label>
+    <input type="number" id="hidxInput"min="0"value="3">
+    <label for="widxInput">widx：</label>
+    <input type="number" id="widxInput"min="0"value="3">
+    <label for="cidxInput">cidx：</label>
+    <input type="number" id="cidxInput"min="0"max="4"value="3">
+    <button onclick="testIdxToElIdx()">idxtoelidx</button><br>
+    <!-- <div id="elIdxToIdxResult"></div>
+    <div id="idxToElIdxResult"></div> -->
+    <textarea id="idxElIdxResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+
+    <div>
+    <h2>Array Element Access</h2>
+    <p>getel(hidx,widx,cidx):获取指定位置的元素值，参数为数组高、宽、通道索引；setel(hidx,widx,cidx,value):设置指定位置的元素值，
+        参数为数组高索引、宽索引、通道索引、设置值；fill(value=3,cidx=null):修改指定通道的数值为特定值</p>
+    <label for="hidxInput">hidx:</label>
+    <input type="number" id="hidxInput1"min="0"value="0">
+    <label for="widxInput">widx:</label>
+    <input type="number" id="widxInput1"min="0"value="0">
+    <label for="cidxInput">cidx:</label>
+    <input type="number" id="cidxInput1"min="0"value="0">
+    <button onclick="testGetEl()">Test getel</button>
+    <label for="valueInput">value:</label>
+    <input type="number" id="valueInput"value="2.3">
+    <button onclick="testSetEl()">Test setel</button>
+    <label for="fillCInput">cidx:</label>
+    <input type="number" id="fillCInput" min="0" max="3"value="0">
+    <label for="fillVInput">value:</label>
+    <input type="number" id="fillVInput" min="0" max="255"value="3.4">
+    <button onclick="testFill()">Test fill</button><br>
+    <textarea id="fillElResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+
+    <div>
+    <h2>dstack and dsplit</h2>
+    <p>dstack(...imgars):按通道进行数组的堆叠,将该数组与另外多个高宽一致的数组堆叠为一个新数组，新传入的数组通道堆叠在后面；dsplit(...channels):将数组沿通道进行分割,
+        可获取指定通道的数据，参数为指定的通道</p>
+    <label for="widthInput1">Width:</label>
+    <input type="number" id="widthInput1" min="0"max="100000"value='256'>
+    <label for="heightInput1">Height:</label>
+    <input type="number" id="heightInput1"min="0"max="100000"value='256'>
+    <label for="channelsInput1">Channels:</label>
+    <input type="number" id="channelsInput1"min="1"max="4"value='3'>
+    <button onclick="createOtherImgArray()">Create other ImgArray</button>
+    <button onclick="dstackOtherImgArray()">Dstack other ImgArray</button>
+    <label for="dsplitInput">Channels:</label>
+    <textarea id="dsplitInput"rows="1" cols="7"placeholder="请输入文本">1,2</textarea>
+    <button onclick="dsplitOtherImgArray()">Dsplit dstacked ImgArray</button><br>
+    <textarea id="dsplitResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+
+    <div>
+    <h2>Arithmetic operations</h2>
+    <p>add(otherArrayOrValue):加减乘除四则运算，参数为ImgArray或者一个数值</p>
+    <label for="widthInput2">Width:</label>
+    <input type="number" id="widthInput2" min="0"max="100000"value='256'>
+    <label for="heightInput2">Height:</label>
+    <input type="number" id="heightInput2"min="0"max="100000"value='256'>
+    <label for="channelsInput2">Channels:</label>
+    <input type="number" id="channelsInput2"min="1"max="4"value='3'>
+    <label for="fillValueInput2">Fill Value:</label>
+    <input type="number" id="fillValueInput2"style="width: 50px; height: 15px;"value='6'>
+    <button onclick="createAnotherImgArray()">Create another ImgArray</button>
+    <button onclick="testaddImgArray()">add</button>
+    <button onclick="testsubImgArray()">sub</button>
+    <button onclick="testmulImgArray()">mul</button>
+    <button onclick="testdivImgArray()">div</button>
+    <label for="operationsInput">Operational Value:</label>
+    <input type="number" id="operationsInput"style="width: 50px; height: 15px;"value='9'>
+    <button onclick="testaddvalue()">add</button>
+    <button onclick="testsubvalue()">sub</button>
+    <button onclick="testmulvalue()">mul</button>
+    <button onclick="testdivvalue()">div</button><br>
+    <textarea id="operationsResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+    
+    <div>
+    <h2>Numeric operations</h2>
+    <p>clamp(vmin=0,vmax=255):对数组进行指定范围内的截断，参数为截断的两个边界值；relu(value=0):接收一个域值value，小于value的值为0，大于等于value的值保持不变；stretch(vmin=0,vmax=255):将数组拉伸到指定范围内，参数为两个边界值</p>
+    <label for="clampMin">Min:</label>
+    <input type="number" id="clampMin" value='0'>
+    <label for="clampMax">Max:</label>
+    <input type="number" id="clampMax" value='255'>
+    <button onclick="testClamp()">Test Clamp</button>
+    <label for="relurValue">ReluValue</label>
+    <input type="number" id="reluValue" value='0'>
+    <button onclick="testRelu()">Test ReLU</button>
+    <label for="stretchMin">Min:</label>
+    <input type="number" id="stretchMin"value='0'>
+    <label for="stretchMax">Max:</label>
+    <input type="number" id="stretchMax"value='255'>
+    <button onclick="testStretch()">Test Stretch</button><br>
+    <textarea id="NumericResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+    
+    <div>
+    <h2>pad and slice</h2>
+    <p>pad(margin=[1,2,3,4],fillvalue=0):对ImgArray进行扩边操作，参数为左上右下要扩大的个数，以及扩边时的填充值；
+        slice(sthidx,edhidx,stwidx,edwidx):按照指定的位置进行切片操作，参数为高的起始位置和结束位置（不包含结束位置），
+        宽的起始和结束位置（不包含结束位置）；neighbor(sizes=[3,3],fillvalue=0):按尺寸进行邻域展开,
+        sizes是2个元素组成的数组，表示邻域的高和宽，应当是奇数</p>
+    <label for="padInput">Margin:</label>
+    <textarea id="padInput" rows="1" cols="15" placeholder="请输入文本">[1,2,3,4],0</textarea>
+    <button onclick="testPad()">Test Pad</button>
+    <label for="sliceInput">slice margins:</label>
+    <textarea id="sliceInput" rows="1" cols="15" placeholder="请输入文本">1,10,1,10</textarea>
+    <button onclick="testSlice()">Test Slice</button>
+    <label for="neighborInput">Sizes:</label>
+    <textarea id="neighborInput" rows="1" cols="15" placeholder="请输入文本">[3,3],0</textarea>
+    <button onclick="testNeighbor()">Test Neighbor</button><br>
+    <textarea id="ShapeResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+    
+    <div>
+    <h2>Channel Aggregation（通道聚集运算）</h2>
+        <p>mean(ischannel=false):计算均值，当ischannel为True时，沿通道计算均值，否则计算全局均值；
+            max(ischannel=false):计算最大值，当ischannel为True时，沿通道计算最大值，否则计算全局最大值；
+            min(ischannel=false):计算最小值，当ischannel为True时，沿通道计算最小值，否则计算全局最小值；
+            linearc(weights=[1,2,3],bais=0):线性加权和，参数为权重和偏置值，weights的长度需要与数组的通道数相同；
+        </p>
+        <label>打开图像：</label>
+        <input  type="file" id="floatInput1">
+        <select id="meanselect">
+            <option value="1">true</option>
+            <option value="">false</option>
+        </select>
+        <button onclick="testMean()">Test Mean</button>
+        <button onclick="testMax()">Test Max</button>
+        <button onclick="testMin()">Test Min</button>
+        <textarea id="linearcInput" rows="1" cols="9" placeholder="weights,bais">[-1.7,0.3,2.3],0</textarea>
+        <button onclick="testLinearC()">Test Linear Convolution</button>
+        <textarea id="caresult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+
+    <div>
+    <h2>Img filter（图像滤波）</h2>
+    <p>median(sizes=[3,3],fillvalue=0):
+        中值滤波，参数为邻域的高和宽，以及扩边的填充值；gaussianBlur(sigma=2,kernel_size=[3,3],size=[3,3],fillvalue=0):
+        高斯滤波，参数为高斯核的标准差，高斯核的高和宽，邻域的高和宽，扩边的填充值；
+        sobelx():得到图像水平方向上的梯度图像；sobely():得到图像垂直方向上的梯度图像；sobelxy():
+        得到图像水平与垂直方向上结合后的梯度图像；laplacian4:算子为[[0,-1,0],[-1,4,-1],[0,-1,0]]；
+        laplacian8:算子为[[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]；sharrx():水平方向上进行操作；sharry():
+        垂直方向上进行操作；sharrxy():水平方向与垂直方向结合后进行操作；</p>
+    <label>打开图像：</label>
+    <input  type="file" id="floatInput2">
+
+    <textarea id="medianInput" rows="1" cols="9" placeholder="sizes,fillvalue">[3,3],0</textarea>
+    <button onclick="testMedian()">Test Median Filter</button>
+    <textarea id="gaussianInput" rows="1" cols="15" placeholder="sigma,kernel_size,size,fillvalue">2,[3,3],0</textarea>
+    <button onclick="testGaussianBlur()">Test Gaussian Blur</button>
+    <select id="testfilterSelect">
+        <option value="sobelX">Sobel X</option>
+        <option value="sobelY">Sobel Y</option>
+        <option value="sobelXY">Sobel XY</option>
+        <option value="laplacian4">Laplacian4</option>
+        <option value="laplacian8">Laplacian8</option>
+        <option value="sharrX">Sharr X</option>
+        <option value="sharrY">Sharr Y</option>
+        <option value="sharrXY">Sharr XY</option>
+        <option value="prewittX">Prewitt X</option>
+        <option value="prewittY">Prewitt Y</option>
+        <option value="prewittXY">Prewitt XY</option>
+        <!-- <option value="canny">Canny</option> -->
+    </select>
+    <button onclick="runFilter()">Run Filter</button><br>
+    <textarea id="FilterResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+    
+
+
+    <div>
+    <h2>Pooling and Morphological Operations</h2>
+    <p>maxpooling(size=[3,3],fillvalue=0):最大值池化,参数为邻域范围和填充值；</p>
+    <p>minpooling(size=[3,3],fillvalue=0):最小值池化,参数为邻域范围和填充值；</p>
+    <p>avgpooling(size=[3,3],fillvalue=0):平均值池化,参数为邻域范围和填充值；</p>
+    <p>dilate(pattern=[[1,1,1],[0,1,0],[1,1,1]],fillvalue=0)：膨胀操作，参数为结构元素和填充值；</p>
+    <p>erode(pattern=[[1,1,1],[0,1,0],[1,1,1]],fillvalue=0)：腐蚀操作，参数为结构元素和填充值；</p>
+    <p>mgradient(sizes=[3,3],fillvalue=0)：基本形态学梯度，参数为邻域范围和填充值；</p>
+    <input  type="file" id="floatInput3">
+    <textarea id="PoolingInput" rows="1" cols="9" placeholder="size,fillvalue">[3,3],0</textarea>
+    <button onclick="testMaxpool()">Test Maxpool</button>
+    <button onclick="testMinpool()">Test Minpool</button>
+    <button onclick="testAvgpool()">Test Avgpool</button>
+    <textarea id="dilateInput" rows="1" cols="28" placeholder="pattern,fillvalue">[[1,1,1],[0,1,0],[1,1,1]],0</textarea>
+    <button onclick="testdilate()">Test dilate</button>
+    <textarea id="erodeInput" rows="1" cols="28" placeholder="pattern,fillvalue">[[1,1,1],[0,1,0],[1,1,1]],0</textarea>
+    <button onclick="testerode()">Test erode</button>
+    <textarea id="mgradientInput" rows="1" cols="9" placeholder="sizes,fillvalue">[3,3],0</textarea>
+    <button onclick="testmgradient()">Test mgradient</button><br>
+    <textarea id="PoolResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea><br>
+    
+    <p>open(pattern=[[1,1,1],[0,1,0],[1,1,1]], fillvalue=0)：开运算，参数为结构元素和填充值；</p>
+    <p>close(pattern=[[1,1,1],[0,1,0],[1,1,1]], fillvalue=0)：闭运算，参数为结构元素和填充值；</p>
+    <p>tophat(pattern=[[1,1,1],[0,1,0],[1,1,1]], fillvalue=0)：顶帽运算，参数为结构元素和填充值；</p>
+    <p>blackhat(pattern=[[1,1,1],[0,1,0],[1,1,1]], fillvalue=0)：黑帽运算，参数为结构元素和填充值；</p>
+    <p>lbp()：用于图像处理中纹理特征提取；</p>
+    <p>lmi(sizes=[3,3])：对图像中的每个像素的局部邻域进行处理；</p>
+    <p>cellsim(sizes=[3,3])：元胞自动机，参数可能指定了元胞自动机中每个元胞周围的邻域大小；</p>
+    <textarea id="MorphologyInput" rows="1" cols="28" placeholder="pattern,fillvalue">[[1,1,1],[0,1,0],[1,1,1]],0</textarea>
+    <button onclick="testOpen()">Test Open</button>
+    <button onclick="testClose()">Test Close</button>
+    <button onclick="testTophat()">Test Tophat</button>
+    <button onclick="testBlackhat()">Test Blackhat</button>
+    <button onclick="testLBP()">Test LBP</button>
+    <textarea id="lmiInput" rows="1" cols="7" placeholder="sizes">[3,3]</textarea>
+    <button onclick="testLMI()">Test LMI</button>
+    <textarea id="cellsimInput" rows="1" cols="7" placeholder="sizes">[3,3]</textarea>
+    <button onclick="testCellsim()">Test Cellsim</button><br>
+    <textarea id="MorphologyResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+    
+    <div>
+    <h2>Other ImgArray Operations</h2>
+    <p>copy():复制当前数组，无需接收参数；empty():创建一个与当前数组尺寸相同的新数组,无需接收参数；
+        meshgrid(hrange=[0,256],wrange=[0,256]):产生规则格网,参数为x和y的取值范围。
+        random(height=256,width=256,channel=3,vmin=0,vmax=255):创建一个指定尺寸的，指定范围的均值分布的数组。
+        参数为图像的高和宽，图像通道数，范围的最小值和最大值。
+    </p>
+    <button onclick="testCopy()">Test Copy</button>
+    <button onclick="testempty()">Test empty</button>
+    <textarea id="meshgridInput" rows="1" cols="20" placeholder="hrange,wrange">[0,256],[0,256]</textarea>
+    <button onclick="testmeshgrid()">Test Meshgrid</button>
+    <textarea id="randomInput" rows="1" cols="15" placeholder="height,width,channel,vmin,vmax">256,256,3,0,255</textarea>
+    <button onclick="testrandom()">Test random</button><br>
+    <textarea id="OtherResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+    
+    <div>
+    <h2>Create Img</h2>
+    <p>{height=256,width=256,lazy=false}:创建一个Img对象，参数为Img的高和宽</p>
+    
+    <label for="imgWidthInput">Width:</label>
+    <input type="number" id="imgWidthInput"min='0'value='256'>
+    <label for="imgHeightInput">Height:</label>
+    <input type="number" id="imgHeightInput"min='0'value='256'>
+    <button onclick="createImg()">Create Img</button><br>
+    <textarea id="createimgResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+    
+    <div>
+    <h2>Img Shape</h2>
+    <p>shape():读取Img对象的形状；value():读取Img对象的数值；fromarray(imgarray):创建一个imgarray对象并将其转换为img对象，然后展示在页面中。</p>
+    <button onclick="testshape()">Test Shape</button>
+    <button onclick="testvalue()">Test Value</button>
+    <label for="widthInput3">Width:</label>
+    <input type="number" id="widthInput3" min="0"max="100000"value='256'>
+    <label for="heightInput3">Height:</label>
+    <input type="number" id="heightInput3"min="0"max="100000"value='256'>
+    <label for="channelsInput3">Channels:</label>
+    <input type="number" id="channelsInput3"min="1"max="4"value='3'>
+    <label for="fillValueInput3">Fill Value:</label>
+    <input type="number" id="fillValueInput3"style="width: 50px; height: 15px;"value='6'>
+    <button onclick="testfromarray()">Test Fromarray</button><br>
+    <textarea id="shapeimgResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+
+    <div>
+    <h2>Img Operations</h2>
+    <p>tofile(name='download.png'):将图像以指定名称保存，参数为指定的名称；</p>
+    <p>tourl():将图像转为url，不需要接收参数；</p>
+    <p>toimg(imgele):将Img转换为img标签元素在网页中展示出来；</p>
+    <p>tocanvas(canvasele):将Img转换为画布元素在网页中展示出来，参数为指定的canvas元素；</p>
+    <p>toarray(droptrans=true):将图像转为数组,droptrans表示通道丢弃，即只保留RGB三个通道的数据；默认值为true;</p>
+    <p>fromurl(imgurl):返回的是一个Promise对象，将指定的url转换为img对象并展示在页面的画布中;</p>
+    <p>fromimg(imgele):返回的是一个Promise对象，将img标签元素转换为Img对象并展示在页面中；</p>
+    <p>fromcanvas(canvasele):将canvas元素转换为Img对象并展示在页面中；</p>
+    <p>fromblob：将blob对象转换为Img对象并展示在页面中；</p>
+    <input type="file" id="fileInput1"><br>
+    <div>
+        <canvas id="Operationscanvas" width="256" height="256"style="border: 1px solid #000;"></canvas>
+        <canvas id="Operationscanvas1" width="256" height="256"style="border: 1px solid #000;"></canvas>
+        <img id="image" src="https://picsum.photos/256" crossOrigin="anonymous" />
+        <!-- <img id="image1" src="https://via.placeholder.com/256" crossOrigin="anonymous" /> -->
+    </div><br>
+    <textarea id="nameInput" rows="1" cols="20" placeholder="name">download.png</textarea>
+    <button onclick="testtofile()">Test Tofile</button>
+    <button onclick="testtourl()">Test Tourl</button>
+    <textarea id="urlInput" rows="1" cols="30" placeholder="url">https://picsum.photos/256</textarea>
+    <button onclick="testfromurl()">Test Fromurl</button>
+    <button onclick="testtoimg()">Test Toimg</button>
+    <button onclick="testfromimg()">Test Fromimg</button>
+    <button onclick="testtocanvas()">Test Tocanvas</button>
+    <button onclick="testfromcanvas()">Test Fromcanvas</button>
+    <select id="arrayselect">
+        <option value="1">true</option>
+        <option value="">false</option>
+    </select>
+    <button onclick="testtoarray()">Test Toarray</button>
+    <button onclick="testfromblob()">Test Fromblob</button><br>
+    <textarea id="imgOperationsResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+    
+    <div>
+    <h2>Img Draw</h2>
+    <p>drawbox(x=50, y=50, w=50, h=50, color='#000000', linewidth=2, fill=false, fillcolor='#000000'):
+        在图像上画一个指定大小的矩形,参数的含义为矩形框的左上角坐标，矩形框的宽和高，矩形框的框线颜色，框线线条粗细，以及矩形框是否填充，以及填充颜色；
+        drawtext(x=50, y=50, text='Hello', color='red', linewidth=2, fontSize=20):
+        在图像上绘制一个指定大小的文字，参数的含义为文字的左上角坐标，文字内容，文字颜色，框线线条粗细，以及文字的字体大小；
+        testImgdraw:在图像上已经绘制了一个矩形框后，再在矩形框中上绘制一些文字
+    </p>
+    <input type="file" id="fileInput"><br>
+    <div class="canvas-container">
+        <canvas id="imgcanvas" width="256" height="256"style="border: 1px solid #000;"></canvas>
+        <canvas id="imgcanvas2" width="256" height="256"style="border: 1px solid #000;"></canvas>
+        <canvas id="imgcanvas3" width="256" height="256"style="border: 1px solid #000;"></canvas>
+        <canvas id="imgcanvas4" width="256" height="256"style="border: 1px solid #000;"></canvas>
+    </div><br>
+    <label for="x">X:</label>
+    <input type="number" id="x" value="50"style="width: 40px;">
+    <label for="y">Y:</label>
+    <input type="number" id="y" value="50"style="width: 40px;">
+    <label for="w">Width:</label>
+    <input type="number" id="w" value="50"style="width: 40px;">
+    <label for="h">Height:</label>
+    <input type="number" id="h" value="50"style="width: 40px;">
+    <label for="color">Color:</label>
+    <input type="color" id="color" value="#000000"style="width: 25px;border-width: 0px;height: 25px;">
+    <label for="linewidth">Line Width:</label>
+    <input type="number" id="linewidth" value="2"min="0"width: 40px;>
+    <label for="fill">Fill:</label>
+    <input type="checkbox" id="fill">
+    <button onclick="testImgDrawBox()">Test Img Draw Box</button><br>
+    <label for="x1">X:</label>
+    <input type="number" id="x1" value="50"style="width: 40px;">
+    <label for="y1">Y:</label>
+    <input type="number" id="y1" value="50"style="width: 40px;">
+    <textarea id="filltextInput" rows="1" cols="20" placeholder="filltext">hello</textarea>
+    <label for="fillcolor">Color:</label>
+    <input type="color" id="color1" value="#000000"style="width: 25px;border-width: 0px;height: 25px;">
+    <label for="linewidth1">Line Width:</label>
+    <input type="number" id="linewidth1" value="2"style="width: 40px;">
+    <label for="fontsize">fontSize:</label>
+    <input type="number" id="fontsize" value="20"style="width: 40px;">
+    <button onclick="testImgDrawText()">Test Img Draw Text</button>
+    <button onclick="testImgDraw()">Test Img Draw</button>
+    </div>
+    
+    <div>
+    <h2>Other Img Operations</h2>
+    <p>hist(channel = 3):画出指定通道的像素值直方图，函数接收通道数(0,1,2),输入3时表示三通道的直方图；
+        resize(height=256,width=256)：将图像缩放为指定大小；接收指定尺寸的高度和宽度，输入256时表示将图像缩放为256*256大小；
+        opacity(value=255):设置图像不透明度，接受一个参数，参数越大越不透明,取值0~255
+    </p>
+    <input type="file" id="fileInput2"><br>
+    <div class="canvas-container">
+        <canvas id="othercanvas" width="256" height="256"style="border: 1px solid #000;"></canvas>
+        <canvas id="othercanvas1" width="256" height="256"style="border: 1px solid #000;"></canvas>
+    </div><br>
+    <label for="hist">Channel:</label>
+    <input type="number" id="hist" value="0"min="0"max="3"style="width: 40px;">
+    <button onclick="testhist()">Test Hist</button>
+    <label for="resizeh">Width:</label>
+    <input type="number" id="resizeh" value="50"style="width: 40px;">
+    <label for="resizew">Height:</label>
+    <input type="number" id="resizew" value="50"style="width: 40px;">
+    <button onclick="testresize()">Test Resize</button>
+    <label for="opacityvalue">Opacity Value:</label>
+    <input type="number" id="opacityvalue" value="50"style="width: 40px;">
+    <button onclick="testopacity()">Test Opacity</button>
+    <textarea id="otherimgOperationsResult" rows="4" cols="50" readonly style="width:97.5vw;font-size:17px"></textarea>
+    </div>
+    
+    
+    <script>
+        var floatcanvas=document.getElementById('floatcanvas');
+        // ImgArray 模块
+
+        let imgArr;
+        const ImgArrayModule = (function() {
+            function createImgArray() {
+                let width = parseInt(document.getElementById('widthInput').value);
+                let height = parseInt(document.getElementById('heightInput').value);
+                let channel = parseInt(document.getElementById('channelsInput').value);
+
+                imgArr = new ImgArray({width, height, channel, lazy:false});
+                imgArr.show({cas:floatcanvas});
+                
+                document.getElementById('imgArrayResult').value = `ImgArray shape: ${imgArr.shape}\nImgArray value: ${imgArr.data}`;
+            }
+            function createimgarray(){
+                imgArr=ImgArray.random();
+                img=Img.fromarray(imgArr);
+                img.tocanvas(floatcanvas);
+                document.getElementById('imgArrayResult').value = `ImgArray shape: ${imgArr.shape}\nImgArray value: ${imgArr.data}`;
+            }
+            function testImgArrayShape() {
+                // 编写测试ImgArray类的代码，并将结果展示在页面上
+                // 例如：
+                let shape = imgArr.shape;
+                document.getElementById('imgTestResult').innerText = `ImgArray shape: ${shape}`;
+            }
+
+            function testImgArrayvalue() {
+                // 编写测试ImgArray类的代码，并将结果展示在页面上
+                // 例如：
+                let value = imgArr.data;
+                document.getElementById('imgTestResult').innerText = `ImgArray value: ${value}`;
+            }
+
+            function testElIdxToIdx() {
+                let elidx = parseInt(document.getElementById('elidxInput').value);
+                let [hidx, widx, cidx] = imgArr.elidxtoidx(elidx);
+                document.getElementById('idxElIdxResult').innerText = `hidx: ${hidx}, widx: ${widx}, cidx: ${cidx}`;
+            }
+            
+            function testIdxToElIdx() {
+                let hidx = parseInt(document.getElementById('hidxInput').value);
+                let widx = parseInt(document.getElementById('widxInput').value);
+                let cidx = parseInt(document.getElementById('cidxInput').value);
+                let elidx = imgArr.idxtoelidx(hidx, widx, cidx);
+                document.getElementById('idxElIdxResult').innerText = `元素索引：${elidx}`;
+            }
+
+            function testGetEl() {
+                document.getElementById('fillElResult').innerText = "";
+                var hidx = parseInt(document.getElementById('hidxInput1').value);
+                var widx = parseInt(document.getElementById('widxInput1').value);
+                var cidx = parseInt(document.getElementById('cidxInput1').value);
+                var value = imgArr.getel(hidx, widx, cidx);
+                // console.log(hidx,widx,cidx,value)
+                document.getElementById('fillElResult').value = `Value: ${value}`;
+            }
+
+            function testSetEl() {
+                document.getElementById('fillElResult').innerText = "";
+                var hidx = parseInt(document.getElementById('hidxInput1').value);
+                var widx = parseInt(document.getElementById('widxInput1').value);
+                var cidx = parseInt(document.getElementById('cidxInput1').value);
+                var value = parseFloat(document.getElementById('valueInput').value);
+                imgArr.setel(hidx, widx, cidx, value);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(imgArr);
+                img.tocanvas(floatcanvas);
+                // console.log(hidx,widx,cidx,value);
+                // console.log(imgArr.data);
+                document.getElementById('fillElResult').value = `${imgArr.data}`;
+            }
+
+            function testFill() {
+                document.getElementById('fillElResult').innerText = "";
+                let value = (document.getElementById('fillVInput').value);
+                let cidx = parseInt(document.getElementById('fillCInput').value);
+                console.log(value, cidx,imgArr.data);
+                imgArr.fill(value, cidx);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(imgArr);
+                img.tocanvas(floatcanvas);
+
+                document.getElementById('fillElResult').value = `${imgArr.data}`;
+            }
+
+            function createOtherImgArray() {
+                let width = parseInt(document.getElementById('widthInput1').value);
+                let height = parseInt(document.getElementById('heightInput1').value);
+                let channel = parseInt(document.getElementById('channelsInput1').value);
+             
+                imgArr1 = new ImgArray({width, height, channel});
+                document.getElementById('dsplitResult').value = `Other ImgArray shape: ${imgArr1.shape}\nOther ImgArray value: ${imgArr1.data}`;
+                // console.log(imgArr1);
+                return imgArr1;
+            }
+
+            function testDstack() {
+                var imgArr1 =  createOtherImgArray();
+                var stackedImgArr = imgArr.dstack(imgArr1);
+                document.getElementById('dsplitResult').value = `Stacked ImgArray shape: ${stackedImgArr.shape}\nStacked ImgArray value: ${stackedImgArr.data}`;
+                return stackedImgArr;
+            }
+
+            function testDsplit() {
+                document.getElementById('dsplitResult').value = "";
+                var stackedImgArr =  testDstack();
+                var dsplitInput = document.getElementById("dsplitInput").value.split(",").map(Number);
+                console.log(typeof dsplitInput,dsplitInput);
+                var splittedImgArr= stackedImgArr.dsplit(...dsplitInput);
+                console.log(splittedImgArr);
+                document.getElementById('dsplitResult').value = `Splitted ImgArray: ${splittedImgArr}`;
+            }
+
+            function createAnotherImgArray() {
+                let width = parseInt(document.getElementById('widthInput2').value);
+                let height = parseInt(document.getElementById('heightInput2').value);
+                let channel = parseInt(document.getElementById('channelsInput2').value);
+                let fillValue = document.getElementById('fillValueInput2').value;
+                imgArr2 = new ImgArray(width, height, channel);
+                imgArr2.fill(fillValue);
+                document.getElementById('operationsResult').value = `Another ImgArray shape: ${imgArr2.shape}\nAother ImgArray value: ${imgArr2.data}`;
+                // console.log(imgArr1);
+                return imgArr2;
+            }
+            function testaddImgArray() {
+                document.getElementById('operationsResult').value = "";
+                var imgArr2 = createAnotherImgArray();
+                var addimgArr = imgArr.add(imgArr2);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(addimgArr);
+                img.tocanvas(floatcanvas);
+                document.getElementById("operationsResult").value =`Add ImgArray shape: ${addimgArr.shape}\nAdd ImgArray value: ${addimgArr.data}`;
+            }
+
+            function testsubImgArray() {
+                document.getElementById('operationsResult').value = "";
+                var imgArr2 = createAnotherImgArray();
+                var subimgArr = imgArr.sub(imgArr2);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(subimgArr);
+                img.tocanvas(floatcanvas);
+                document.getElementById("operationsResult").value =`Sub ImgArray shape: ${subimgArr.shape}\nSub ImgArray value: ${subimgArr.data}`;
+            }
+            function testmulImgArray() {
+                document.getElementById('operationsResult').value = "";
+                var imgArr2 = createAnotherImgArray();
+                var mulimgArr = imgArr.mul(imgArr2);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(mulimgArr);
+                img.tocanvas(floatcanvas);
+                document.getElementById("operationsResult").value =`Mul ImgArray shape: ${mulimgArr.shape}\nMul ImgArray value: ${mulimgArr.data}`;
+            }
+            function testdivImgArray() {
+                document.getElementById('operationsResult').value = "";
+                var imgArr2 = createAnotherImgArray();
+                var divimgArr = imgArr.div(imgArr2);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(divimgArr);
+                img.tocanvas(floatcanvas);
+                document.getElementById("operationsResult").value =`Div ImgArray shape: ${divimgArr.shape}\nDiv ImgArray value: ${divimgArr.data}`;
+            }
+
+            function testaddvalue() {
+                document.getElementById('operationsResult').value = "";
+                var operationsvalue = parseFloat(document.getElementById('operationsInput').value);
+                var addimgArr = imgArr.add(operationsvalue);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(addimgArr);
+                img.tocanvas(floatcanvas);
+                // console.log(addimgArr,operationsvalue);
+                document.getElementById("operationsResult").value =`Add ImgArray shape: ${addimgArr.shape}\nAdd ImgArray value: ${addimgArr.data}`;
+            }
+            function testsubvalue() {
+                document.getElementById('operationsResult').value = "";
+                var operationsvalue = parseFloat(document.getElementById('operationsInput').value);
+                var subimgArr = imgArr.sub(operationsvalue);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(subimgArr);
+                img.tocanvas(floatcanvas);
+                // console.log(subimgArr,operationsvalue);
+                document.getElementById("operationsResult").value =`Sub ImgArray shape: ${subimgArr.shape}\nSub ImgArray value: ${subimgArr.data}`;
+            }
+            function testmulvalue() {
+                document.getElementById('operationsResult').value = "";
+                var operationsvalue = parseFloat(document.getElementById('operationsInput').value);
+                var mulimgArr = imgArr.mul(operationsvalue);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(mulimgArr);
+                img.tocanvas(floatcanvas);
+                // console.log(mulimgArr,operationsvalue);
+                document.getElementById("operationsResult").value =`Mul ImgArray shape: ${mulimgArr.shape}\nMul ImgArray value: ${mulimgArr.data}`;
+            }
+            function testdivvalue() {
+                document.getElementById('operationsResult').value = "";
+                var operationsvalue = parseFloat(document.getElementById('operationsInput').value);
+                var divimgArr = imgArr.div(operationsvalue);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(divimgArr);
+                img.tocanvas(floatcanvas);
+                // console.log(divimgArr,operationsvalue);
+                document.getElementById("operationsResult").value =`Div ImgArray shape: ${divimgArr.shape}\nDiv ImgArray value: ${divimgArr.data}`;
+            }
+            // 测试 clamp 函数
+            function testClamp() {
+                document.getElementById('NumericResult').value = "";
+                let vmin = parseFloat(document.getElementById("clampMin").value);
+                let vmax = parseFloat(document.getElementById("clampMax").value);
+                let clampimgArr = imgArr.clamp(vmin, vmax);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(clampimgArr);
+                img.tocanvas(floatcanvas);
+                // console.log(clampimgArr,vmin,vmax);
+                document.getElementById("NumericResult").value =`Clamp ImgArray shape: ${clampimgArr.shape}\nClamp ImgArray value: ${clampimgArr.data}`;
+            }
+
+            // 测试 relu 函数
+            function testRelu() {
+                document.getElementById('NumericResult').value = "";
+                let value = parseFloat(document.getElementById("reluValue").value);
+                let reluimgArr = imgArr.relu(value);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(reluimgArr);
+                img.tocanvas(floatcanvas);
+                document.getElementById("NumericResult").value =`Relu ImgArray shape: ${reluimgArr.shape}\nRelu ImgArray value: ${reluimgArr.data}`;
+            }
+
+            // 测试 stretch 函数
+            function testStretch() {
+                document.getElementById('NumericResult').value = "";
+                let vmin = parseFloat(document.getElementById("stretchMin").value);
+                let vmax = parseFloat(document.getElementById("stretchMax").value);
+                let stretchimgArr = imgArr.stretch(vmin, vmax);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(stretchimgArr);
+                img.tocanvas(floatcanvas);
+                document.getElementById("NumericResult").value =`Stretch ImgArray shape: ${stretchimgArr.shape}\nStretch ImgArray value: ${stretchimgArr.data}`;
+
+            }
+
+            function testPad() {
+                document.getElementById('ShapeResult').value = "";
+                var padInput = document.getElementById("padInput").value;
+                const splitIndex = padInput.lastIndexOf(",");
+                const tupleString = padInput.substring(0, splitIndex);
+                const numberString = padInput.substring(splitIndex + 1);
+
+                // 转换为元组和数字
+                const tupleArray = tupleString.substring(1, tupleString.length - 1).split(",").map(Number);
+                const number = parseInt(numberString);
+                console.log(typeof tupleArray, typeof number, tupleArray, number);
+                var padImgArr= imgArr.pad(tupleArray,number);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(padImgArr);
+                img.tocanvas(floatcanvas);
+                document.getElementById("ShapeResult").value =`PadImgArray shape: ${padImgArr.shape}\nPadImgArray value: ${padImgArr.data}`;
+
+            }
+
+            function testSlice() {
+                document.getElementById('ShapeResult').value = "";
+                var sliceInput = document.getElementById("sliceInput").value.split(",").map(Number);
+                // console.log(typeof sliceInput, sliceInput);
+                var SliceImgArr= imgArr.slice(...sliceInput);
+                const whitearray=new ImgArray(256,256,4,0);
+                whiteimg=Img.fromarray(whitearray);
+                whiteimg.tocanvas(floatcanvas);
+                img=Img.fromarray(SliceImgArr);
+                img.tocanvas(floatcanvas);
+                document.getElementById("ShapeResult").value =`SliceImgArray shape: ${SliceImgArr.shape}\nSliceImgArray value: ${SliceImgArr.data}`;
+            }
+            function testNeighbor() {
+                document.getElementById('ShapeResult').value = "";
+                var neighborInput = document.getElementById("neighborInput").value;
+                var splitIndex = neighborInput.lastIndexOf(",");
+                var tupleString = neighborInput.substring(0, splitIndex);
+                var numberString = neighborInput.substring(splitIndex + 1);
+
+                // 转换为元组和数字
+                var tupleArray = tupleString.substring(1, tupleString.length - 1).split(",").map(Number);
+                var number = parseInt(numberString);
+                // console.log(typeof tupleArray, typeof number, tupleArray, number);
+                var NeighborImgArr= imgArr.neighbor(tupleArray,number);
+                document.getElementById("ShapeResult").value =`NeighborImgArray shape: ${NeighborImgArr.shape}\nNeighborImgArray value: ${NeighborImgArr.data}`;
+
+            }
+            function testMean() {
+                let result=document.getElementById('caresult');
+                result.value = "";
+                var value = Boolean(document.getElementById("meanselect").value);
+                var meanimgArr = imgArr.mean(value);
+
+                if(value===true){
+                    meanimgArr.show({cas:floatcanvas});
+                    result.value =`Mean ImgArray shape: ${meanimgArr.shape}\nMean ImgArray value: ${meanimgArr.data}`;
+                }else{
+                    result.value =`Mean ImgArray value: ${meanimgArr}`;
+                }
+            }
+            function testMax(){
+                let result=document.getElementById('caresult');
+                result.value = "";
+                var value = Boolean(document.getElementById("meanselect").value);
+                // console.log(typeof value,value);
+                var maximgArr = imgArr.max(value);
+                if(value===true){
+                    maximgArr.show({cas:floatcanvas});
+                    result.value =`Max ImgArray shape: ${maximgArr.shape}\nMax ImgArray value: ${maximgArr.data}`;
+                }else{
+                    result.value =`Max ImgArray value: ${maximgArr}`;
+                }
+            }
+            function testMin(){
+                let result=document.getElementById('caresult');
+                result.value = "";
+                var value = Boolean(document.getElementById("meanselect").value);
+                var minimgArr = imgArr.min(value);
+                if(value===true){
+                    minimgArr.show({cas:floatcanvas});
+                    result.value =`Min ImgArray shape: ${minimgArr.shape}\nMax ImgArray value: ${minimgArr.data}`;
+                }else{
+                    result.value =`Min ImgArray value: ${minimgArr}`;
+                }
+            }
+            function testLinearC() {
+                let result=document.getElementById('caresult');
+                result.value = "";
+                var linearcInput = document.getElementById("linearcInput").value;
+                var splitIndex = linearcInput.lastIndexOf(",");
+                var tupleString = linearcInput.substring(0, splitIndex);
+                var numberString = linearcInput.substring(splitIndex + 1);
+
+                // 转换为元组和数字
+                var tupleArray = tupleString.substring(1, tupleString.length - 1).split(",").map(Number);
+                var number = parseInt(numberString);
+                // console.log(typeof tupleArray, typeof number, tupleArray, number);
+                var LinearimgArr= imgArr.linearc(tupleArray,number);
+                LinearimgArr.show({cas:floatcanvas});
+                result.value =`LinearImgArray shape: ${LinearimgArr.shape}\nLinearImgArray value: ${LinearimgArr.data}`;
+            }
+
+            function testMedian() {
+                let result=document.getElementById('FilterResult');
+                result.value = "";
+                var medianInput = document.getElementById("medianInput").value;
+                var splitIndex = medianInput.lastIndexOf(",");
+                var tupleString = medianInput.substring(0, splitIndex);
+                var numberString = medianInput.substring(splitIndex + 1);
+
+                // 转换为元组和数字
+                var tupleArray = tupleString.substring(1, tupleString.length - 1).split(",").map(Number);
+                var number = parseInt(numberString);
+                // console.log(typeof tupleArray, typeof number, tupleArray, number);
+                var MedianimgArr= imgArr.median(tupleArray,number);
+                MedianimgArr.show({cas:floatcanvas});
+                document.getElementById("FilterResult").value =`MedianimgArray shape: ${MedianimgArr.shape}\nMedianimgArray value: ${MedianimgArr.data}`;
+            }
+
+            function testGaussianBlur() {
+                let result=document.getElementById('FilterResult');
+                result.value = "";
+                var gaussianInput = document.getElementById("gaussianInput").value//.split(",");
+                // console.log(gaussianInput);
+                var numberString1 = gaussianInput[0];
+                var tupleArray1 = gaussianInput.substring(2,7);
+                var numberString2 = gaussianInput[8];
+                var kernel_size = JSON.parse(tupleArray1);
+                var sigma = parseInt(numberString1);
+                var fillvalue = parseInt(numberString2);
+                // console.log(kernel_size,typeof kernel_size, size,typeof size, sigma,typeof sigma, fillvalue,typeof fillvalue);
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var GaussianimgArr= imgArr.gaussianBlur(sigma,kernel_size,fillvalue);
+                GaussianimgArr.show({cas:floatcanvas});
+                result.value =`GaussianimgArray shape: ${GaussianimgArr.shape}\nGaussianimgArray value: ${GaussianimgArr.data}`;
+            }
+            function runFilter() {
+                var filterSelect = document.getElementById('testfilterSelect').value;
+                let result=document.getElementById('FilterResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                console.log(filterSelect);
+                let resarr=null;
+                switch (filterSelect) {
+                    case 'sobelX':
+                        resarr=imgArr.sobelx();
+                        result.value =`SobelX ImgArray shape: ${resarr.shape}\nSobelX ImgArray value: ${resarr.data}`;
+                        resarr.show({vmin:-128,vmax:128,cas:floatcanvas});
+                        break;
+                    case 'sobelY':
+                        resarr=imgArr.sobely();
+                        result.value =`SobelY ImgArray shape: ${resarr.shape}\nSobelY ImgArray value: ${resarr.data}`;
+                        resarr.show({vmin:-128,vmax:128,cas:floatcanvas});
+                        break;
+                    case 'sobelXY':
+                        resarr=imgArr.sobelxy();
+                        result.value =`SobelXY ImgArray shape: ${resarr.shape}\nSobelXY ImgArray value: ${resarr.data}`;
+                        resarr.show({vmin:0,vmax:384,cas:floatcanvas});
+                        break;
+                    case 'laplacian4':
+                        resarr=imgArr.laplacian(4);
+                        result.value =`Laplacian4 ImgArray shape: ${resarr.shape}\nLaplacian4 ImgArray value: ${resarr.data}`;
+                        resarr.show({vmin:-50,vmax:50,cas:floatcanvas});
+                        break;
+                    case 'laplacian8':
+                        resarr=imgArr.laplacian(8);
+                        result.value =`Laplacian8 ImgArray shape: ${resarr.shape}\nLaplacian8 ImgArray value: ${resarr.data}`;
+                        resarr.show({vmin:-100,vmax:100,cas:floatcanvas});
+                        break;
+                    case 'sharrX':
+                        resarr=imgArr.sharrx();
+                        result.value =`Sharrx ImgArray shape: ${resarr.shape}\nSharrx ImgArray value: ${resarr.data}`;
+                        resarr.show({vmin:-400,vmax:400,cas:floatcanvas});
+                        break;
+                    case 'sharrY':
+                        resarr=imgArr.sharry();
+                        result.value =`Sharry ImgArray shape: ${resarr.shape}\nSharry ImgArray value: ${resarr.data}`;
+                        resarr.show({vmin:-400,vmax:400,cas:floatcanvas});
+                        break;
+                    case 'sharrXY':
+                        resarr=imgArr.sharrxy();
+                        result.value =`Sharrxy ImgArray shape: ${resarr.shape}\nSharrxy ImgArray value: ${resarr.data}`;
+                        resarr.show({vmin:0,vmax:1024,cas:floatcanvas});
+                        break;
+                    case 'prewittX':
+                        resarr=imgArr.prewittx();
+                        result.value =`Prewittx ImgArray shape: ${resarr.shape}\nPrewittx ImgArray value: ${resarr.data}`;
+                        resarr.show({vmin:-100,vmax:100,cas:floatcanvas});
+                        break;
+                    case 'prewittY':
+                        resarr=imgArr.prewitty();
+                        result.value =`Prewitty ImgArray shape: ${resarr.shape}\nPrewitty ImgArray value: ${resarr.data}`;
+                        resarr.show({vmin:-100,vmax:100,cas:floatcanvas});
+                        break;
+                    case 'prewittXY':
+                        resarr=imgArr.prewittxy();
+                        result.value =`Prewittxy ImgArray shape: ${resarr.shape}\nPrewittxy ImgArray value: ${resarr.data}`;
+                        resarr.show({vmin:0,vmax:256,cas:floatcanvas});
+                        break;
+                    // case 'canny':
+                    //     testCanny();
+                    //     break;
+                    default:
+                        console.log('Invalid filter selected');
+                    
+                }
+            }
+
+            function testMaxpool(){
+                let result=document.getElementById('PoolResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var PoolingInput = document.getElementById("PoolingInput").value;
+                var splitIndex = PoolingInput.lastIndexOf(",");
+                var tupleString = PoolingInput.substring(0, splitIndex);
+                var numberString = PoolingInput.substring(splitIndex + 1);
+
+                // 转换为元组和数字
+                var tupleArray = tupleString.substring(1, tupleString.length - 1).split(",").map(Number);
+                var number = parseInt(numberString);
+                // console.log(tupleArray, number);
+                MaxpoolimgArr=imgArr.maxpooling(tupleArray,number);
+                MaxpoolimgArr.show({cas:floatcanvas});
+                result.value =`Maxpool ImgArray shape: ${MaxpoolimgArr.shape}\nMaxpool ImgArray value: ${MaxpoolimgArr.data}`;
+            }
+
+            function testMinpool(){
+                let result=document.getElementById('PoolResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var PoolingInput = document.getElementById("PoolingInput").value;
+                var splitIndex = PoolingInput.lastIndexOf(",");
+                var tupleString = PoolingInput.substring(0, splitIndex);
+                var numberString = PoolingInput.substring(splitIndex + 1);
+                // 转换为元组和数字
+                var tupleArray = tupleString.substring(1, tupleString.length - 1).split(",").map(Number);
+                var number = parseInt(numberString);
+                MinpoolimgArr=imgArr.minpooling(tupleArray,number);
+                MinpoolimgArr.show({cas:floatcanvas});
+                result.value =`Minpool ImgArray shape: ${MinpoolimgArr.shape}\nMinpool ImgArray value: ${MinpoolimgArr.data}`;
+            }
+
+            function testAvgpool(){
+                let result=document.getElementById('PoolResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var PoolingInput = document.getElementById("PoolingInput").value;
+                var splitIndex = PoolingInput.lastIndexOf(",");
+                var tupleString = PoolingInput.substring(0, splitIndex);
+                var numberString = PoolingInput.substring(splitIndex + 1);
+                // 转换为元组和数字
+                var tupleArray = tupleString.substring(1, tupleString.length - 1).split(",").map(Number);
+                var number = parseInt(numberString);
+                AvgpoolimgArr=imgArr.avgpooling(tupleArray,number);
+                AvgpoolimgArr.show({cas:floatcanvas});
+                result.value =`Avgpool ImgArray shape: ${AvgpoolimgArr.shape}\nAvgpool ImgArray value: ${AvgpoolimgArr.data}`;
+            }
+
+            function testdilate(){
+                let result=document.getElementById('PoolResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var PoolingInput = document.getElementById("dilateInput").value;
+                var splitIndex = PoolingInput.lastIndexOf(",");
+                var tupleString = PoolingInput.substring(0, splitIndex);
+
+                var numberString = PoolingInput.substring(splitIndex + 1);
+                // 转换为元组和数字
+                var tupleArray = JSON.parse(tupleString);
+                var number = parseInt(numberString);
+                //console.log(tupleArray,number);
+                dilateimgArr=imgArr.dilate(tupleArray,number);
+                dilateimgArr.show({cas:floatcanvas});
+                result.value =`Dilate ImgArray shape: ${dilateimgArr.shape}\nDilate ImgArray value: ${dilateimgArr.data}`;
+            }
+
+            function testerode(){
+                let result=document.getElementById('PoolResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var PoolingInput = document.getElementById("erodeInput").value;
+                var splitIndex = PoolingInput.lastIndexOf(",");
+                var tupleString = PoolingInput.substring(0, splitIndex);
+                var numberString = PoolingInput.substring(splitIndex + 1);
+                // 转换为元组和数字
+                var tupleArray = JSON.parse(tupleString);
+                var number = parseInt(numberString);
+                console.log(tupleArray,number);
+                erodeimgArr=imgArr.erode(tupleArray,number);
+                erodeimgArr.show({cas:floatcanvas});
+                result.value =`Erode ImgArray shape: ${erodeimgArr.shape}\nErode ImgArray value: ${erodeimgArr.data}`;
+            }
+
+            function testmgradient(){
+                let result=document.getElementById('PoolResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var PoolingInput = document.getElementById("mgradientInput").value;
+                var splitIndex = PoolingInput.lastIndexOf(",");
+                var tupleString = PoolingInput.substring(0, splitIndex);
+                var numberString = PoolingInput.substring(splitIndex + 1);
+                // 转换为元组和数字
+                var tupleArray = JSON.parse(tupleString);
+                var number = parseInt(numberString);
+                // console.log(tupleArray, number);
+                var mgradientimgArr=imgArr.mgradient(tupleArray,number);
+                mgradientimgArr.show({cas:floatcanvas});
+                result.value =`Mgradient ImgArray shape: ${mgradientimgArr.shape}\nMgradient ImgArray value: ${mgradientimgArr.data}`;
+            }
+            function testOpen(){
+                let result=document.getElementById('MorphologyResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var MorphologyInput = document.getElementById("MorphologyInput").value;
+                var splitIndex = MorphologyInput.lastIndexOf(",");
+                var tupleString = MorphologyInput.substring(0, splitIndex);
+                var numberString = MorphologyInput.substring(splitIndex + 1);
+                // 转换为元组和数字
+                var tupleArray = JSON.parse(tupleString);
+                var number = parseInt(numberString);
+                // console.log(tupleArray, number);
+                var openimgArr=imgArr.open(tupleArray,number);
+                openimgArr.show({cas:floatcanvas});
+                result.value =`Open ImgArray shape: ${openimgArr.shape}\nOpen ImgArray value: ${openimgArr.data}`;
+            }
+            function testClose(){
+                let result=document.getElementById('MorphologyResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var MorphologyInput = document.getElementById("MorphologyInput").value;
+                var splitIndex = MorphologyInput.lastIndexOf(",");
+                var tupleString = MorphologyInput.substring(0, splitIndex);
+                var numberString = MorphologyInput.substring(splitIndex + 1);
+                // 转换为元组和数字
+                var tupleArray = JSON.parse(tupleString);
+                var number = parseInt(numberString);
+                // console.log(tupleArray, number);
+                var closeimgArr=imgArr.close(tupleArray,number);
+                closeimgArr.show({cas:floatcanvas});
+                result.value =`Close ImgArray shape: ${closeimgArr.shape}\nClose ImgArray value: ${closeimgArr.data}`;
+            }
+            function testTophat(){
+                let result=document.getElementById('MorphologyResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var MorphologyInput = document.getElementById("MorphologyInput").value;
+                var splitIndex = MorphologyInput.lastIndexOf(",");
+                var tupleString = MorphologyInput.substring(0, splitIndex);
+                var numberString = MorphologyInput.substring(splitIndex + 1);
+                // 转换为元组和数字
+                var tupleArray = JSON.parse(tupleString);
+                var number = parseInt(numberString);
+                // console.log(tupleArray, number);
+                var tophatimgArr=imgArr.tophat(tupleArray,number);
+                tophatimgArr.show({cas:floatcanvas});
+                result.value =`Tophat ImgArray shape: ${tophatimgArr.shape}\nTophat ImgArray value: ${tophatimgArr.data}`;
+            }
+            function testBlackhat(){
+                let result=document.getElementById('MorphologyResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var MorphologyInput = document.getElementById("MorphologyInput").value;
+                var splitIndex = MorphologyInput.lastIndexOf(",");
+                var tupleString = MorphologyInput.substring(0, splitIndex);
+                var numberString = MorphologyInput.substring(splitIndex + 1);
+                // 转换为元组和数字
+                var tupleArray = JSON.parse(tupleString);
+                var number = parseInt(numberString);
+                // console.log(tupleArray, number);
+                var blackhatimgArr=imgArr.blackhat(tupleArray,number);
+                blackhatimgArr.show({cas:floatcanvas});
+                result.value =`Blackhat ImgArray shape: ${blackhatimgArr.shape}\nBlackhat ImgArray value: ${blackhatimgArr.data}`;
+            }
+            function testLBP(){
+                let result=document.getElementById('MorphologyResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var lbpimgArr=imgArr.lbp();
+                lbpimgArr.show({cas:floatcanvas});
+                document.getElementById("MorphologyResult").value =`LBP ImgArray shape: ${lbpimgArr.shape}\nLBP ImgArray value: ${lbpimgArr.data}`;
+            }
+            function testLMI(){
+                let result=document.getElementById('MorphologyResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var lmiInput=JSON.parse(document.getElementById("lmiInput").value);
+                // console.log(lmiInput);
+                var LMIimgArr=imgArr.lmi(lmiInput);
+                LMIimgArr.show({vmax:lmiInput[0]*lmiInput[1],cas:floatcanvas});
+                result.value =`LMI ImgArray shape: ${LMIimgArr.shape}\nLMI ImgArray value: ${LMIimgArr.data}`;
+            }
+            function testCellsim(){
+                let result=document.getElementById('MorphologyResult');
+                result.value = "";
+                if (imgArr.channel>1) imgArr=imgArr.mean(true);
+                var cellsimInput=JSON.parse(document.getElementById("cellsimInput").value);
+                // console.log(typeof cellsimInput,cellsimInput);
+                var cellsimimgArr=imgArr.cellsim(cellsimInput);
+                cellsimimgArr.show({cas:floatcanvas});
+                result.value =`Cellsim ImgArray shape: ${cellsimimgArr.shape}\nCellsim ImgArray value: ${cellsimimgArr.data}`;
+            }
+            function testCopy(){
+                document.getElementById('OtherResult').value = "";
+                var copyimgArr=imgArr.copy();
+                document.getElementById("OtherResult").value =`Copy ImgArray shape: ${copyimgArr.shape}\nCopy ImgArray value: ${copyimgArr.data}`;
+            }
+            function testempty(){
+                document.getElementById('OtherResult').value = "";
+                var emptyimgArr=imgArr.empty();
+                document.getElementById("OtherResult").value =`Empty ImgArray shape: ${emptyimgArr.shape}\nEmpty ImgArray value: ${emptyimgArr.data}`;
+            }
+            function testmeshgrid(){
+                document.getElementById('OtherResult').value = "";
+                var meshgridInput=document.getElementById("meshgridInput").value;
+                var tupleArray1 = JSON.parse(meshgridInput.substring(0,7));
+                var tupleArray2 = JSON.parse(meshgridInput.substring(8,15));
+                console.log(tupleArray1,tupleArray2);
+                var meshgridimgArr=ImgArray.meshgrid(tupleArray1,tupleArray2);
+                document.getElementById("OtherResult").value =`Meshgrid Array: ${meshgridimgArr}`;
+            }
+            function testrandom(){
+                document.getElementById('OtherResult').value = "";
+                var randomInput=document.getElementById("randomInput").value.split(',').map(Number);
+                var randomimgArr=ImgArray.random(...randomInput);
+                document.getElementById("OtherResult").value =`Random ImgArray shape: ${randomimgArr.shape}\nRandom ImgArray value: ${randomimgArr.data}`;
+            }
+
+            return {
+                createImgArray: createImgArray,
+                createimgarray:createimgarray,
+                testImgArrayShape: testImgArrayShape,
+                testImgArrayvalue: testImgArrayvalue,
+                testElIdxToIdx: testElIdxToIdx,
+                testIdxToElIdx: testIdxToElIdx,
+                testGetEl: testGetEl,
+                testSetEl: testSetEl,
+                testFill: testFill,
+                createOtherImgArray: createOtherImgArray,
+                testDstack: testDstack,
+                testDsplit:testDsplit,
+                createAnotherImgArray: createAnotherImgArray,
+                testaddImgArray: testaddImgArray,
+                testsubImgArray: testsubImgArray,
+                testmulImgArray: testmulImgArray,
+                testdivImgArray: testdivImgArray,
+                testaddvalue:testaddvalue,
+                testsubvalue:testsubvalue,
+                testmulvalue:testmulvalue,
+                testdivvalue:testdivvalue,
+                testClamp:testClamp,
+                testRelu:testRelu,
+                testStretch:testStretch,
+                testPad:testPad,
+                testSlice:testSlice,
+                testNeighbor:testNeighbor,
+                testMean:testMean,
+                testMax:testMax,
+                testMin:testMin,
+                testLinearC:testLinearC,
+                testMedian:testMedian,
+                testGaussianBlur:testGaussianBlur,
+                runFilter:runFilter,
+                testSobelX:testSobelX,
+                testSobelY:testSobelY,
+                testSobelXY:testSobelXY,
+                testLaplacian:testLaplacian,
+                testSharrX:testSharrX,
+                testSharrY:testSharrY,
+                testSharrXY:testSharrXY,
+                testPrewittX:testPrewittX,
+                testPrewittY:testPrewittY,
+                testPrewittXY:testPrewittXY,
+                // testCanny:testCanny,
+                testMaxpool:testMaxpool,
+                testMinpool:testMinpool,
+                testAvgpool:testAvgpool,
+                testdilate:testdilate,
+                testerode:testerode,
+                testmgradient:testmgradient,
+                testOpen:testOpen,
+                testClose:testClose,
+                testTophat:testTophat,
+                testBlackhat:testBlackhat,
+                testLBP:testLBP,
+                testLMI:testLMI,
+                testCellsim:testCellsim,
+                testCopy:testCopy,
+                testempty:testempty,
+                testmeshgrid:testmeshgrid,
+                testrandom:testrandom,
+
+
+
+            };
+        })();
+
+        // Img 模块
+        let img;
+        const ImgModule = (function() {
+            function createImg() {
+                let width = parseInt(document.getElementById('imgWidthInput').value);
+                let height = parseInt(document.getElementById('imgHeightInput').value);
+                document.getElementById('createimgResult').value="";
+                img = new Img({width, height});
+                img.tocanvas(floatcanvas);
+                // console.log(typeof img);
+                document.getElementById('createimgResult').value=`Img Width:${img.width} Img Height:${img.height}\nImg Value: ${img.data}`;
+            }
+            function createimg(){
+                imgarr=ImgArray.random();
+                imgarr.show({cas:floatcanvas})
+                document.getElementById('createimgResult').value=`Img Width:${img.width} Img Height:${img.height}\nImg Value: ${img.data}`;
+            }
+            function testshape(){
+                document.getElementById('shapeimgResult').value="";
+                document.getElementById('shapeimgResult').value=`Img Width:${img.width}\nImg Height:${img.height}`;
+            }
+            function testvalue(){
+                document.getElementById('shapeimgResult').value="";
+                document.getElementById('shapeimgResult').value=`Img Value: ${img.data}`;
+            }
+            function testfromarray(){
+                document.getElementById('shapeimgResult').value="";
+                let width = parseInt(document.getElementById('widthInput3').value);
+                let height = parseInt(document.getElementById('heightInput3').value);
+                let channel = parseInt(document.getElementById('channelsInput3').value);
+                let fillValue = document.getElementById('fillValueInput3').value;
+
+                imgarr = new ImgArray({width, height, channel}).fill(fillValue);
+                img=Img.fromarray(imgarr);
+                img.tocanvas(floatcanvas);
+                document.getElementById('shapeimgResult').value=`Img Width:${img.width} Img Height:${img.height}\nImg Value: ${img.data}`;
+            }
+
+            window.onload = function() {
+                testImgFromFile();
+                testImgOperations();
+                testOtherOperations();
+
+                loadimgtofloat('floatInput1');
+                loadimgtofloat('floatInput2');
+                loadimgtofloat('floatInput3');
+            };
+
+            function testImgFromFile() {
+                let cas = document.querySelector('#imgcanvas');
+                
+                var finput = document.querySelector('#fileInput');
+                finput.addEventListener('change', () => {
+                    let fileobj = finput.files[0];
+                    
+                    Img.fromfile(fileobj)
+                        .then((img) => {
+                            // 调用 resize() 函数进行图像缩放
+                            img.resize(256, 256)
+                                .then((resizedImg) => {
+                                    // 将缩放后的图像绘制到 canvas 上
+                                    resizedImg.tocanvas(cas);
+
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                });
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        });
+                });
+            }
+
+            function testImgOperations() {
+                let cas = document.querySelector('#Operationscanvas');
+                
+                var finput = document.querySelector('#fileInput1');
+                finput.addEventListener('change', () => {
+                    let fileobj = finput.files[0];
+                    
+                    Img.fromfile(fileobj)
+                        .then((img) => {
+                            // 调用 resize() 函数进行图像缩放
+                            img.resize(256, 256)
+                                .then((resizedImg) => {
+                                    // 将缩放后的图像绘制到 canvas 上
+                                    resizedImg.tocanvas(cas);
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                });
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        });
+                });
+            }
+
+            function testOtherOperations() {
+                let cas = document.querySelector('#othercanvas');
+                
+                var finput = document.querySelector('#fileInput2');
+                finput.addEventListener('change', () => {
+                    let fileobj = finput.files[0];
+                    
+                    Img.fromfile(fileobj)
+                        .then((img) => {
+                            // 调用 resize() 函数进行图像缩放
+                            img.resize(256, 256)
+                                .then((resizedImg) => {
+                                    // 将缩放后的图像绘制到 canvas 上
+                                    resizedImg.tocanvas(cas);
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                });
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        });
+                });
+            }
+
+            function loadimgtofloat(inputid){
+                let cas = document.querySelector('#floatcanvas');
+                
+                var finput = document.querySelector('#'+inputid);
+                finput.addEventListener('change', () => {
+                    let fileobj = finput.files[0];
+                    
+                    Img.fromfile(fileobj)
+                        .then((img) => {
+                            // 调用 resize() 函数进行图像缩放
+                            img.resize(256, 256)
+                                .then((resizedImg) => {
+                                    // 将缩放后的图像绘制到 canvas 上
+                                    resizedImg.tocanvas(cas);
+                                    imgArr=resizedImg.toarray();
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                });
+                        })
+                        .catch((error) => {
+                            console.error(error);
+                        });
+                });
+            }
+
+           
+            function testtofile(){
+                let cas = document.querySelector('#Operationscanvas');
+                let imgcanvas=Img.fromcanvas(cas);
+                let name=document.getElementById('nameInput').value;
+                // console.log(name);
+                imgcanvas.tofile(name);
+            }
+            function testtourl(){
+                let cas = document.querySelector('#Operationscanvas');
+                let imgcanvas=Img.fromcanvas(cas);
+                imgurl=imgcanvas.tourl();
+                // console.log(imgurl);
+                document.getElementById('imgOperationsResult').value=imgurl;
+            }
+            async function testfromurl(){
+                let url=document.getElementById('urlInput').value;
+                img=await Img.fromurl(url);
+                document.getElementById('imgOperationsResult').value=`Img Value: ${img.data}`;
+                // console.log(img);
+                let cas = document.querySelector('#Operationscanvas1');
+                img.tocanvas(cas);
+            }
+            function testtoimg(){
+                let imgele=document.getElementById('image');
+                img.toimg(imgele);
+                document.getElementById('imgOperationsResult').value=`Img Value: ${img.data}`;
+                // console.log(img);
+            }
+            async function testfromimg(){
+                imgele=document.getElementById('image');
+                img=await Img.fromimg(imgele);
+                // console.log(img);
+                document.getElementById('imgOperationsResult').value=`Img Value: ${img.data}`;
+                let cas = document.querySelector('#Operationscanvas1');
+                img.tocanvas(cas);
+            }
+            function testtocanvas(){
+                let cas = document.querySelector('#Operationscanvas1');
+                img.tocanvas(cas);
+                document.getElementById('imgOperationsResult').value=`Img Value: ${img.data}`;
+            }
+            function testfromcanvas(){
+                let cas=document.getElementById('Operationscanvas');
+                img=Img.fromcanvas(cas);
+                let cas1=document.getElementById('Operationscanvas1');
+                img.tocanvas(cas1);
+                document.getElementById('imgOperationsResult').value=`Img Value: ${img.data}`;
+            }
+            function testtoarray(){
+                document.getElementById('imgOperationsResult').value = "";
+                var value = Boolean(document.getElementById("arrayselect").value);
+                // console.log(typeof value,value);
+                var array = img.toarray(value);
+                document.getElementById("imgOperationsResult").value =`Array shape: ${array.shape}\nArray value: ${array.data}`;
+            }
+            function testfromblob(){
+                fetch('./dog.jpg').then(x=>{ return x.blob()}).then(b=>{return Img.fromblob(b)}).then(img=>{let cas = document.getElementById('Operationscanvas1');img.tocanvas(cas)});
+            }
+
+            function testhist(){
+                document.getElementById('otherimgOperationsResult').value = "";
+                let histInput=parseInt(document.getElementById('hist').value);
+                // console.log(typeof histInput,histInput);
+                let imghist = img.hist(histInput);
+                document.getElementById('otherimgOperationsResult').value =`Histogram: ${imghist}`;
+            }
+            async function testresize(){
+                let canvas=document.getElementById('othercanvas');
+                img=Img.fromcanvas(canvas);
+                let w = parseInt(document.getElementById('resizew').value);
+                let h = parseInt(document.getElementById('resizeh').value);
+                let newimg=await img.resize(w,h);
+                console.log(newimg);
+                let cas=document.getElementById('othercanvas1');
+                newimg.tocanvas(cas);
+            }
+            function testopacity(){
+                let canvas=document.getElementById('othercanvas');
+                img=Img.fromcanvas(canvas);
+                let opacity = parseInt(document.getElementById('opacityvalue').value);
+                img.opacity(opacity);
+                let cas=document.getElementById('othercanvas1');
+                img.tocanvas(cas);
+                document.getElementById('otherimgOperationsResult').value =`Opacity Img: ${img}`;
+            }
+            function testImgDrawBox() {
+                const canvas = document.getElementById('imgcanvas');
+                img=Img.fromcanvas(canvas);
+                let x = parseInt(document.getElementById('x').value);
+                let y = parseInt(document.getElementById('y').value);
+                let w = parseInt(document.getElementById('w').value);
+                let h = parseInt(document.getElementById('h').value);
+                let color = document.getElementById('color').value;
+                let linewidth = parseInt(document.getElementById('linewidth').value);
+                let fill = document.getElementById('fill').checked;
+                let fillcolor = document.getElementById('color').value;
+
+                img.drawbox(x, y, w, h, color, linewidth, fill, fillcolor);
+                img.tocanvas(imgcanvas2);
+
+            }
+
+            function testImgDrawText() {
+                const canvas = document.getElementById('imgcanvas');
+                img=Img.fromcanvas(canvas);
+                let x = parseInt(document.getElementById('x1').value);
+                let y = parseInt(document.getElementById('y1').value);
+                let filltext=document.getElementById('filltextInput').value;
+                let color = document.getElementById('color1').value;
+                let linewidth = parseInt(document.getElementById('linewidth1').value);
+                let fontsize = parseInt(document.getElementById('fontsize').value);
+                console.log(x,y,filltext,color,linewidth,fontsize);
+
+                img.drawtext(x, y,filltext, color,linewidth, fontsize);
+                img.tocanvas(imgcanvas3);
+            }
+            function testImgDraw() {
+                const canvas = document.getElementById('imgcanvas2');
+                img=Img.fromcanvas(canvas);
+                let x = parseInt(document.getElementById('x1').value);
+                let y = parseInt(document.getElementById('y1').value);
+                let filltext=document.getElementById('filltextInput').value;
+                let color = document.getElementById('color1').value;
+                let linewidth = parseInt(document.getElementById('linewidth1').value);
+                let fontsize = parseInt(document.getElementById('fontsize').value);
+                console.log(x,y,filltext,color,linewidth,fontsize);
+
+                img.drawtext(x, y,filltext, color,linewidth, fontsize);
+                img.tocanvas(imgcanvas4);
+            }
+
+            return {
+                createImg:createImg,
+                createimg:createimg,
+                testImgFromFile: testImgFromFile,
+                testImgDrawBox: testImgDrawBox,
+                testImgDrawText: testImgDrawText,
+                testshape: testshape,
+                testvalue: testvalue,
+                testfromarray: testfromarray,
+                testImgFromFile: testImgFromFile,
+                testImgDrawBox: testImgDrawBox,
+                testImgDrawText: testImgDrawText,
+                testImgDraw:testImgDraw,
+                testtofile:testtofile,
+                testtourl:testtourl,
+                testfromurl:testfromurl,
+                testtoimg:testtoimg,
+                testfromimg:testfromimg,
+                testtocanvas:testtocanvas,
+                testfromcanvas:testfromcanvas,
+                testtoarray:testtoarray,
+                testfromblob:testfromblob,
+                testhist:testhist,
+                testresize:testresize,
+                testopacity:testopacity,
+            };
+        })();
+
+        // 调用相应模块的方法
+        function createImgArray() {
+            ImgArrayModule.createImgArray();
+        }
+        function createimgarray(){
+            ImgArrayModule.createimgarray();
+        }
+
+        function testImgArrayShape() {
+            ImgArrayModule.testImgArrayShape();
+        }
+
+        function testImgArrayvalue() {
+            ImgArrayModule.testImgArrayvalue();
+        }
+
+        function testElIdxToIdx() {
+            ImgArrayModule.testElIdxToIdx();
+        }
+
+        function testIdxToElIdx() {
+            ImgArrayModule.testIdxToElIdx();
+        }
+
+        function testGetEl(){
+            ImgArrayModule.testGetEl();
+        }
+        function testSetEl(){
+            ImgArrayModule.testSetEl();
+        }
+        function testFill(){
+            ImgArrayModule.testFill();
+        }
+        function createOtherImgArray(){
+            ImgArrayModule.createOtherImgArray();
+        }
+
+        function dstackOtherImgArray(){
+            ImgArrayModule.testDstack();
+        }
+
+        function dsplitOtherImgArray(){
+            ImgArrayModule.testDsplit();
+        }
+
+        function createAnotherImgArray(){
+            ImgArrayModule.createAnotherImgArray();
+        }
+        function testaddImgArray(){
+            ImgArrayModule.testaddImgArray();
+        }
+        function testsubImgArray(){
+            ImgArrayModule.testsubImgArray();
+        }
+        function testmulImgArray(){
+            ImgArrayModule.testmulImgArray();
+        }
+        function testdivImgArray(){
+            ImgArrayModule.testdivImgArray();
+        }
+
+        function testaddvalue(){
+            ImgArrayModule.testaddvalue();
+        }
+
+        function testsubvalue(){
+            ImgArrayModule.testsubvalue();
+        }
+
+        function testmulvalue(){
+            ImgArrayModule.testmulvalue();
+        }
+
+        function testdivvalue(){
+            ImgArrayModule.testdivvalue();
+        }
+        function testClamp(){
+            ImgArrayModule.testClamp();
+        }
+
+        function testRelu(){
+            ImgArrayModule.testRelu();
+        }
+
+        function testStretch(){
+            ImgArrayModule.testStretch();
+        }
+        function testPad(){
+            ImgArrayModule.testPad();
+        }
+        function testSlice(){
+            ImgArrayModule.testSlice();
+        }
+        function testNeighbor(){
+            ImgArrayModule.testNeighbor();
+        }
+        function testMean(){
+            ImgArrayModule.testMean();
+        }
+        function testMax(){
+            ImgArrayModule.testMax();
+        }
+
+        function testMin(){
+            ImgArrayModule.testMin();
+        }
+        function testLinearC(){
+            ImgArrayModule.testLinearC();
+        }
+        function testMedian(){
+            ImgArrayModule.testMedian();
+        }
+        function testGaussianBlur(){
+            ImgArrayModule.testGaussianBlur();
+        }
+        function runFilter(){
+            ImgArrayModule.runFilter();
+        }
+        function testSobelX(){
+            ImgArrayModule.testSobelX();
+        }
+        function testSobelY(){
+            ImgArrayModule.testSobelY();
+        }
+        function testSobelXY(){
+            ImgArrayModule.testSobelXY();
+        }
+        function testLaplacian(size){
+            ImgArrayModule.testLaplacian(size);
+        }
+
+        function testSharrX(){
+            ImgArrayModule.testSharrX();
+        }
+        function testSharrY(){
+            ImgArrayModule.testSharrY();
+        }
+        function testSharrXY(){
+            ImgArrayModule.testSharrXY();
+        }
+
+        function testPrewittX(){
+            ImgArrayModule.testPrewittX();
+        }
+        function testPrewittY(){
+            ImgArrayModule.testPrewittY();
+        }
+        function testPrewittXY(){
+            ImgArrayModule.testPrewittXY();
+        }
+
+        function testCanny(){
+            ImgArrayModule.testCanny();
+        }
+        function testMaxpool(){
+            ImgArrayModule.testMaxpool();
+        }
+        function testMinpool(){
+            ImgArrayModule.testMinpool();
+        }
+        function testAvgpool(){
+            ImgArrayModule.testAvgpool();
+        }
+
+        function testdilate(){
+            ImgArrayModule.testdilate();
+        }
+        function testerode(){
+            ImgArrayModule.testerode();
+        }
+        function testmgradient(){
+            ImgArrayModule.testmgradient();
+        }
+        function testOpen(){
+            ImgArrayModule.testOpen();
+        }
+        function testClose(){
+            ImgArrayModule.testClose();
+        }
+        function testTophat(){
+            ImgArrayModule.testTophat();
+        }
+        function testBlackhat(){
+            ImgArrayModule.testBlackhat();
+        }
+        function testLBP(){
+            ImgArrayModule.testLBP();
+        }
+        function testLMI(){
+            ImgArrayModule.testLMI();
+        }
+        function testCellsim(){
+            ImgArrayModule.testCellsim();
+        }
+        function testCopy(){
+            ImgArrayModule.testCopy();
+        }
+        function testempty(){
+            ImgArrayModule.testempty();
+        }
+        function testmeshgrid(){
+            ImgArrayModule.testmeshgrid();
+        }
+        function testempty(){
+            ImgArrayModule.testempty();
+        }
+        function testrandom(){
+            ImgArrayModule.testrandom();
+        }
+
+        function createImg() {
+            ImgModule.createImg();
+        }
+        function createimg(){
+            ImgModule.createimg();
+        }
+        function saveimgarr(){
+            let img=Img.fromcanvas(floatcanvas);
+            let arr=img.toarray();
+            imgArr=arr.dsplit(0)[0];
+        }
+
+        function testshape(){
+            ImgModule.testshape();
+        }
+        function testvalue(){
+            ImgModule.testvalue();
+        }
+        function testfromarray(){
+            ImgModule.testfromarray();
+        }
+        function testfromcanvas(){
+            ImgModule.testfromcanvas();
+        }
+        function testfromimg(){
+            ImgModule.testfromimg();
+        }
+        function testfromurl(){
+            ImgModule.testfromurl();
+        }
+        function testfromblob(){
+            ImgModule.testfromblob();
+        }
+        function testfromfile(){
+            ImgModule.testfromfile();
+        }
+        function testImgFromFile() {
+            ImgModule.testImgFromFile();
+        }
+        function testtofile(){
+            ImgModule.testtofile();
+        }
+        function testtourl(){
+            ImgModule.testtourl();
+        }
+        function testtoimg(){
+            ImgModule.testtoimg();
+        }
+        function testtocanvas(){
+            ImgModule.testtocanvas();
+        }
+        function testtoarray(){
+            ImgModule.testtoarray();
+        }
+        function testhist(){
+            ImgModule.testhist();
+        }
+        function testresize(){
+            ImgModule.testresize();
+        }
+        function testopacity(){
+            ImgModule.testopacity();
+        }
+
+        function testImgDrawBox() {
+            ImgModule.testImgDrawBox();
+        }
+
+        function testImgDrawText() {
+            ImgModule.testImgDrawText();
+        }
+
+        function testImgDraw(){
+            ImgModule.testImgDraw();
+        }
+    </script>
+</body>
+</html>

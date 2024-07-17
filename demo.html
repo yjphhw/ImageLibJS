@@ -2,31 +2,38 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>图像处理库(Image Processing Library)---ImageLibJS</title>
+        <title>ImageLibJS usage demos</title>
         <script src="./Imagelib.js" ></script>
     </head>
     <body>
-        <h1>图像处理库(Image Processing Library)---ImageLibJS</h1>
+        <h1>ImageLibJS---An easy-to-use image processing library in JavaScript</h1>
+        <h1>ImageLibJS---一个易使用的JavaScript图像处理库</h1>
         
-        <h2>从以下示例开始学习(Learn ImageLibJS from belowing samples):</h2>
-        <h3>ImgArray类示例</h3>
-        <p>ImgArray类实现了三维数组，可用于表示图像，提供了一个便利的show()方法，能够对通道数为1或3的数组进行显示。</p>
+        <h2>Learn ImageLibJS from belowing samples (从以下示例开始学习):</h2>
+        <h3>Demos for ImgArray class</h3>
         <ul>
-            <li><a href="./examples/生成红色图像.html" target="_blank">生成红色图像(generate a red image)</a></li>
+            <li><a href="./examples/create_ImgArray.html" target="_blank">create_ImgArray（数组创建）</a></li>
+            <li><a href="./examples/generate_red_ImgArray.html" target="_blank">generate a red image（生成红色图像）</a></li>
+            <li><a href="./examples/hstack.html" target="_blank">hstack（水平叠加）</a></li>
+            <li><a href="./examples/vstack.html" target="_blank">vstack（竖直叠加）</a></li>
+            
+            <li><a href="./examples/chessboard.html" target="_blank">chessboard（棋盘格）</a></li></li>
             <li><a href="./examples/kmeans.html" target="_blank">kmeans</a></li>
         </ul>
 
-        <h3>Img类示例</h3>
+        <h3>Demos for Img class</h3>
         <p>Img类提供了图像对象，主要功能是进行图像的输入/输出，提供了toarray()方法，转为ImgArray对象，提供了fromarray()方法，将ImgArray对象转为Img类。</p>
         <ul>
-            <li><a href="./examples/打开显示本地图像.html" target="_blank">打开显示本地图像(open image from computer)</a></li>
-            <li><a href="./examples/从摄像头拍摄图像.html" target="_blank">从摄像头拍摄图像(load image from camera)</a></li>
-            <li><a href="./examples/从video标签中获取图像.html" target="_blank">从video标签中获取图像(load image from video element)</a></li>
+            <li><a href="./examples/imageopacity.html" target="_blank">图像不透明度</a></li>
+            <li><a href="./examples/打开显示本地图像.html" target="_blank">Load a image from local computer(打开显示本地图像)</a></li>
+            <li><a href="./examples/从摄像头拍摄图像.html" target="_blank">Capture a image from camera(从摄像头拍摄图像)</a></li>
+            <li><a href="./examples/从video标签中获取图像.html" target="_blank">Capture a image from video element(从video标签中获取图像)</a></li>
             
         </ul>
         
         <h2>API文档</h2>
         <!-- js代码如何进行混淆加密：https://zhuanlan.zhihu.com/p/648869784 -->
+        <a href="./examples/apitest.html">API usage</a>
     </body>
 
 </html>

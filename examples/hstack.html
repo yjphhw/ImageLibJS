@@ -6,13 +6,15 @@
         <script src="../Imagelib.js" ></script>
     </head>
     <body>
+        <h1>horizontal stack</h1>
         <h1>水平叠加</h1>
-        <h1>stack arrays in horizon</h1>
-        <p>下面会显示一个256x512的红色图像。代码可从控制台查看！</p>
+        <h1>stack arrays in horizontal, the width direction!</h1>
+        <p>hstack() method. three array in red, green and blue are stack horizontal to a red-gree-blue image</p>
+        <p>hstack()方法。下面会一幅由红绿蓝三个数组拼接为一幅红绿蓝图像！</p>
         <script>
-           let a1=new ImgArray().fill(255,0);  //红色
-           let a2=new ImgArray().fill(255,1);  //绿色
-           let a3=new ImgArray().fill(255,2);  //蓝色
+           let a1=new ImgArray({height:512}).fill(255,0);  //红色
+           let a2=new ImgArray({height:512}).fill(255,1);  //绿色
+           let a3=new ImgArray({height:512}).fill(255,2);  //蓝色
            a1.hstack(a2,a3).show();  //水平叠加，并显示为图像
         </script>
     </body>
