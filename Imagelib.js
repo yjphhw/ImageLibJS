@@ -138,10 +138,11 @@ class ImgArray {
             return this;
         }
         if (cidx instanceof Array){
-            this.data.forEach( (x,idx)=>{ if (cidx.includes(idx %this.channel) ) this.data[idx]=value; }, this);
-            return this;
+            this.data.forEach( (x,idx,arr)=>{ if (cidx.includes(idx %this.channel) ) arr[idx]=value; }, this);
         }
-        this.data.forEach( (x,idx)=>{ if (idx %this.channel==cidx ) this.data[idx]=value; }, this);
+        else {
+            this.data.forEach( (x,idx,arr)=>{ if (idx %this.channel==cidx ) arr[idx]=value; }, this);
+        }
         return this;
     }   
 
@@ -244,7 +245,7 @@ class ImgArray {
         let tmpimgarrs=[this,...imgars];
         let newheight=0;
         for (let imgidx=0;imgidx<tmpimgarrs.length;imgidx++){
-            newheight+=tmpimgarrs[imgidx].width;
+            newheight+=tmpimgarrs[imgidx].height;
         }
         let newarray=new ImgArray({height:newheight,width:this.width,channel:this.channel});
         let offsetidx=0;
@@ -964,15 +965,17 @@ class ImgArray {
     show({vmin=0,vmax=255,cas=null}={}){
         //当数组为图像时，直接在网页中显示图像，方便观察
         //与matploblib的imshow很相似
-        let data=this.span(vmin,vmax,0,255);
-        console.log(data)
         if ([1,3,4].includes(this.channel)){
+            let data=this.span(vmin,vmax,0,255);
+            console.log(data);
             let img=Img.fromarray(data);
             img.show(cas);
             return img;   //返回显示的图像对象，从而可以调用其方法
         }
-        else 
-            console.error('数组的通道数不正确，当通道数是1, 3, 或 4时才可以显示为图像！')
+        else {
+            console.error('array channel is not correct, channel should be 1(gray),3(RGB) or 4(RGBA)')
+            console.error('数组的通道数不正确，当通道数是1（灰度）, 3（RGB彩色）, 或 4（带有透明通道的彩色图像）时才可以显示为图像！')
+        }
     }
 }
 
@@ -1019,7 +1022,7 @@ class Img extends ImgArray{
         //从canvas元素生成图像
         let ctx = canvasele.getContext("2d");
         let imgdata=ctx.getImageData(0,0,canvasele.width,canvasele.height);
-        let oimg=new Img({height:imgdata.height,width:imgdata.width});
+        let oimg=new Img({height:imgdata.height,width:imgdata.width,lazy:true});
         oimg.data=imgdata.data.slice();  //.slice() 复制数据
         return oimg
     }
@@ -1232,7 +1235,7 @@ class Img extends ImgArray{
         let channel= droptrans? 3:4;
         if (droptrans){
             let oimgar=new ImgArray({height:this.height,width:this.width,channel});
-            oimgar.data.forEach((x,idx,arr)=>{ arr[idx]=this.data[parseInt(idx/3)*4+idx%3]},this.data);
+            oimgar.data.forEach((x,idx,arr)=>{ arr[idx]=this.data[parseInt(idx/3)*4+idx%3]},this);
             return oimgar;
         }
         else{
@@ -1320,7 +1323,9 @@ class Img extends ImgArray{
 
     opacity(value=255){
         //设置图像不透明度，越大越不透明,取值0~255
-        this.data.forEach(function (x,idx,arr){ if (idx %4==3 ) arr[idx]=value  })
+        //this.fill(value,3); 这种和下面的用哪种实现？
+        this.data.forEach(function (x,idx,arr){ if (idx %4==3 ) arr[idx]=value  });
+        return this;
     }
 
     drawbox(x=50, y=50, w=50, h=50, color='#000000', linewidth=2, fill=false, fillcolor='#000000'){
@@ -1345,6 +1350,7 @@ class Img extends ImgArray{
         }
         // 将绘制后的图像数据更新到Img对象中
         this.data = ctx.getImageData(0, 0, this.width, this.height).data;
+        return this;
     }
 
     drawtext({x=50, y=50, text='Hello', color='red', linewidth=2, fontSize=20}={}){
@@ -1365,6 +1371,7 @@ class Img extends ImgArray{
     
         // 将绘制后的图像数据更新到Img对象中
         this.data = ctx.getImageData(0, 0, this.width, this.height).data;
+        return this;
     }
 
     show(cas=null){
@@ -1374,5 +1381,6 @@ class Img extends ImgArray{
         cs.height=this.height;
         this.tocanvas(cs);
         cas ? null: document.body.appendChild(cs);
+        return this;
     }
 }

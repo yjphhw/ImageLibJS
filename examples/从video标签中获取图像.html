@@ -6,11 +6,17 @@
         <script src="../Imagelib.js" ></script>
     </head>
     <body>
+        <h1>Capture image from video element</h1>
         <h1>从video标签中获取图像></h1>
+        <p>Img's static method fromvideo() is used.</p>
         <p>video标签内播放视频，可以对视频截图。下方video内标签内加入摄像头，再下方是截图。注意：需要开启摄像头权限</p>
+        <input type="button" value="Capture(截图)" onclick="grabvideo()"/>
+        <br>
         <video id="vcam"></video>
-        <input type="button" value="截图" onclick="grabvideo()"/>
+        <br>
         <script>
+            var image=null;
+            //open camera and show in a video element
             var video = document.querySelector('#vcam');
             navigator.mediaDevices.getUserMedia({ video: true })
             .then(function(stream) {
@@ -20,6 +26,7 @@
             .catch(function(error) {
                 console.log('无法获取视频流: ', error);
             });
+            //grab image from video element
             function grabvideo(){
                 let img=Img.fromvideo(video);
                 img.show();

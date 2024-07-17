@@ -15,29 +15,35 @@
         
         //Imgarray转为tensor
         //创建数组
-        var imgarr=ImgArray.random(256,256,3,0,255)
+        var imgarr=ImgArray.random(256,256,3,0,255);
         //将数组转为float32tensor
-        var t=new ort.Tensor('float32',imgarr.data,imgarr.shape)
-
+        var {height,width,channel}=imgarr.shape;
+        var t=new ort.Tensor('float32',imgarr.data,[height,width,channel])
+        console.log(t);
         //直接将数组转为uint8
         var imgardata=new Uint8Array(imgarr.data)
-        var t2=new ort.Tensor('uint8',imgardata,imgarr.shape)
+        var t2=new ort.Tensor('uint8',imgardata,[height,width,channel])
+        console.log(t2);
 
         //图像转为张量
         var img=Img.fromarray(imgarr)
         img.tocanvas(cas)
+
         //将图像转为uint8tensor
         var imgdata=new Uint8Array(img.data.buffer)
-        var t1=new ort.Tensor('uint8',imgdata,img.shape)
+        var {height,width,channel}=img.shape;
+        var t1=new ort.Tensor('uint8',imgdata,[height,width,channel])
 
         //从张量转为ImgArray
         let dim=t.dims.length
         let arr=null
+        console.log(t.dims)
         if (dim=3)
             arr=new ImgArray(t.dims[0],t.dims[1],t.dims[2])
         else
             arr=new ImgArray(t.dims[0],t.dims[1],1)
         arr.data=new Float32Array(t.data)
+        console.log(arr);
     </script>
 </body>
 </html>

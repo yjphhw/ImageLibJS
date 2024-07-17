@@ -6,9 +6,13 @@
         <script src="../Imagelib.js" ></script>
     </head>
     <body>
+        <h1>Load and show a image from local computer</h1>
         <h1>打开显示本地图像</h1>
+        <p>Img's static method fromfile() is used.</p>
+        <p>click the button and choose a image.</p>
         <p>点击下方按钮，选择本地图像打开，会在下方显示。</p>
         <input type="file" id="fileInput">
+        <br>
         <script>
             var finput=document.querySelector('#fileInput')
             finput.addEventListener('change',()=>{
