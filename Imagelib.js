@@ -1,55 +1,5 @@
-//Imagelib.js v1.1
-//作者：李静，侯伟
-//2024.6.11
-//用于在WEB上进行图像及图像处理的处理
-//ImgArray为三维数组，维度分别为高，宽和通道，当通是1，3，4时可以表示为图像，元素类型可以是nj.dtyps中的类型，默认是float32
-//Img为图像，元素为ClampUint8类型，主要提供了图像的读取和显示，以及简单的图像编辑功能。
-//二者的最主要区别就是ImgArray是数组，可以进行许多运算
-//Img是图像，主要提供图像的存取，以及和数组的转化，由于Img继承了ImgArray类。
-//在图像处理时，需要将Img转为数组后进行，反之，当需要显示是需要将ImgArray转为Img后进行。
-//js代码如何进行混淆加密：https://zhuanlan.zhihu.com/p/648869784   使用obfuscated工具
-
-
-
-//6.11完善了传参方式
-//参考资料：https://zhuanlan.zhihu.com/p/83651953
-//多个不同类型的参数传递时，使用Object，即{}，如下：
-//k={a:3,b:4}  //传参
-//let {a,b}=k  //取参
-//示例：
-//function add({a=3,b=4}={}) {return a+b}   //加入了一个默认值
-//add({b:33})
-//36
-//上述使用对象传参的好处就是不考虑参数的顺序，并且还提供了默认参数
-
-
-//多个相同类型的参数传递时使用...Array，
-//好处时当是Array的时候，可以使用...Array，当是单个值时也可以直接传输
-//function add(...nums){ return nums  }
-//add(3)
-//[3]
-//add(3,4,5)
-//[3, 4, 5]
-//add(...[3,4,5])
-//[3,4,5]
-
-//单值的还是用一个参数名即可
-
-//（4）撰写单个功能的API文档  
-
-//决策树分类器？    暂不考虑
-//感知器？
-//进一步完善形态学运算？
-//哪些操作是inplace的？ 应当如何区分是否具有inplace操作？         暂不考虑
-
-//进一步了解typedarray的特性
-//二维矩阵运算    #需要考虑，为以后旋转矩阵作好准备
-
-//Todo:
-//完善文档，特别是英文文档，以及相关的示例
-
-//利用hstack, vstack以grid的方式显示多幅图像
-
+//ImageLibJS用于在WEB上进行图像及图像处理的处理
+//
 class ImgArray {
     //ImageArray 更重要的是数组，提供数组的计算，但是数组的运算支持上偏向于图像处理
     //后期可以仿照Numpy转为强大的数组计算库
@@ -79,13 +29,27 @@ class ImgArray {
 
     initarray(){
         if (this.data==null) this.data=new ImgArray.dtypes[this.dtype](this.numel);
+        return this;
     }
 
     get shape(){
+        //返回数组的形状
         return {height:this.height,width:this.width,channel:this.channel};
     }
+
     get size(){
+        //返回数组的元素个数
         return this.numel;
+    }
+
+    get elbytes(){ 
+        //每个元素的字节数
+        return ImgArray.dtypes[this.dtype].BYTES_PER_ELEMENT;
+    }
+
+    get bytesize(){
+        //返回数组的字节大小
+        return this.numel*this.elbytes;
     }
 
     elidxtoidx(elidx=0){
@@ -118,15 +82,17 @@ class ImgArray {
         if (this.checkisvalid(hidx,widx,cidx))
             return this.data.at(this.idxtoelidx(hidx,widx,cidx));
         console.error('数组元素索引越界')
+        return null;
     }
 
     setel(hidx,widx,cidx,value){
         //根据数组索引设置元素值
         if (this.checkisvalid(hidx,widx,cidx)){
             this.data[this.idxtoelidx(hidx,widx,cidx)]=value;
-            return;
+            return this;  //以供链式调用
         }
         console.error('数组元素索引越界')
+        return null;
     }
 
     fill(value=3,cidx=null){
@@ -255,6 +221,7 @@ class ImgArray {
         }
         return newarray;
     }
+
     //数组点运算
     vectorize(func){
         //逐元素的运算，function的形式参考array.map接受的回调函数的形式
@@ -271,7 +238,7 @@ class ImgArray {
             return newarr;
         } else {
             console.error('两数组的尺寸不匹配。');
-            return this;
+            return null;
         }
     }
 
@@ -284,7 +251,7 @@ class ImgArray {
             return this.operateArrayOperation(otherArrayOrValue, addFunc);
         }else {
             console.error('无效的操作数');
-            return this;
+            return null;
         }
     }
 
@@ -297,7 +264,7 @@ class ImgArray {
             return this.operateArrayOperation(otherArrayOrValue, subFunc);
         }else {
             console.error('无效的操作数');
-            return this;
+            return null;
         }
     }
 
@@ -310,7 +277,7 @@ class ImgArray {
             return this.operateArrayOperation( otherArrayOrValue, mulFunc);
         }else {
             console.error('无效的操作数');
-            return this;
+            return null;
         }
     }
 
@@ -322,12 +289,12 @@ class ImgArray {
         } else if (otherArrayOrValue instanceof ImgArray) {
             if (otherArrayOrValue.data.some(value => value === 0)) {
                 console.error('除数不能为0');
-                return this;
+                return null;
             }
             return this.operateArrayOperation(otherArrayOrValue, divFunc);
         } else {
             console.error('除数不合法');
-            return this;
+            return null;
         }
     }
     
@@ -381,7 +348,7 @@ class ImgArray {
 
     span(lower,upper,vmin=0,vmax=255){
         //区间变换
-        let func=function (x){
+        let func= (x)=>{
             if(x>upper) x=upper;
             if(x<lower) x=lower;
             return (x-lower)/(upper-lower)*(vmax-vmin)+vmin;
@@ -389,28 +356,41 @@ class ImgArray {
         return this.vectorize(func);
     }
 
+    globalminmax(){
+        //获取整个数组的最小值和最大值
+        let minv=this.data[0];
+        let maxv=this.data[0];
+        this.data.forEach( (x)=>{ 
+            if(x<minv) {
+                minv=x ; 
+                return }
+            if (x>maxv) {
+                maxv=x ;
+                return }
+        });
+        return [minv,maxv];
+    }
+
     stretch(vmin=0,vmax=255){
         //拉伸到指定的数值范围内
-        let minv=this.min();
-        let maxv=this.max();
+        let [minv,maxv]=this.globalminmax();
         if (minv==maxv){
-            return this.copy().fill(128); } 
+            return this.copy().fill( (vmin+vmax)/2 ); } 
         else{
             return this.vectorize( (x)=>{return (x-minv)/(maxv-minv)*(vmax-vmin)+vmin});
         }
     }
     
-    pad(margin=[1,2,3,4],fillvalue=0){
+    pad({l=1,r=2,t=3,b=4, fillvalue=0}={}){
         //对高和宽进行常数填充的扩边操作,顺序是左上右下
-        let [lp,tp,rp,bp]=margin;
-        let newheight=this.height+tp+bp;
-        let newwidth=this.width+lp+rp;
+        let newheight=this.height+t+b;
+        let newwidth=this.width+l+r;
         let newarr=new ImgArray({height:newheight,width:newwidth,channel:this.channel}).fill(fillvalue);
-        for (let hidx=tp;hidx<this.height+tp;hidx++){
-            for(let widx=lp;widx<this.width+lp;widx++){
+        for (let hidx=t;hidx<this.height+t;hidx++){
+            for(let widx=l;widx<this.width+l;widx++){
                 for (let cidx=0;cidx<this.channel;cidx++){
-                    let ohidx=hidx-tp;
-                    let owidx=widx-lp;
+                    let ohidx=hidx-t;
+                    let owidx=widx-l;
                     let tmpv=this.getel(ohidx,owidx,cidx);
                     newarr.setel(hidx,widx,cidx,tmpv);
                 }
@@ -447,7 +427,7 @@ class ImgArray {
         let pady=Math.floor(kernelheight/2);
         let padx=Math.floor(kernelwidth/2);
         
-        let padimgar=this.pad([padx,pady,padx,pady],fillvalue);
+        let padimgar=this.pad({l:padx,t:pady,r:padx,b:pady,fillvalue});
         let imgarrs=[];
         for (let idxh=0; idxh<kernelheight;idxh++){
             for (let idxw=0;idxw<kernelwidth;idxw++){
@@ -773,18 +753,26 @@ class ImgArray {
     
     copy(){
         //复制当前数组
-        let newarr=new ImgArray({height:this.height,width:this.width,channel:this.channel,lazy:true});
+        let newarr=this.empty(true);
         newarr.data=this.data.slice();
         return newarr;
     }
 
     empty(lazy=false){
-        //创建一个与当前数组尺寸相同的新数组
-        return new ImgArray({height:this.height,
-                        width:this.width,
-                        channel:this.channel,
-                        lazy,
-                        dtype:this.dtype})
+        //创建一个与当前数组尺寸相同的空数组
+        //考虑了ImgArray和Img实例
+        if (this.constructor.name=="ImgArray"){
+            return new ImgArray({height:this.height,
+                width:this.width,
+                channel:this.channel,
+                lazy,
+                dtype:this.dtype})
+        }
+        else {
+            return new Img({height:this.height,
+                width:this.width,
+                lazy})
+        }
     }
 
     static meshgrid(hrange=[0,256],wrange=[0,256]){
@@ -802,7 +790,7 @@ class ImgArray {
         return [yimgarr,ximgarr];
     }
 
-    static random(height=256,width=256,channel=3,vmin=0,vmax=255){
+    static random({height=256,width=256,channel=3,vmin=0,vmax=255}={}){
         //创建一个指定尺寸的，指定范围的均值分布的数组
         let newimgarr=new ImgArray({height,width,channel,lazy:false});
         newimgarr.data=newimgarr.data.map(x=>Math.random()*(vmax-vmin)+vmin);
@@ -934,9 +922,9 @@ class ImgArray {
     }
 
     hwc2chw(){
-        //用于将hxwxc转有cxhxw的方法，返回一个排列为cxhxw的一维float32数组
-        let chs=this.dsplit()
-        let res=new ImgArray({height:this.channel,width:this.height,channel:this.width});
+        //用于将hxwxc转为cxhxw的方法，返回一个排列为cxhxw的一维float32数组
+        let chs=this.dsplit();
+        let res=new ImgArray({height:this.channel,width:this.height,channel:this.width,dtype:this.dtype});
         for (let i =0;i<chs.length;i++){
             res.data.set(chs[i].data, i*chs[i].data.length);
         }
@@ -945,9 +933,10 @@ class ImgArray {
 
     chw2hwc(){
         //hwc2chw的逆操作,hwc2chw和chw2hwc都是transpose的简单化
-        let [c,h,w]=this.shape;
+        let {height,width,channel}=this.shape;
+        let [c,h,w]=[height,width,channel];
         let baselen=h*w;
-        let res=new ImgArray({height:h,width:w,channel:c});
+        let res=new ImgArray({height:h,width:w,channel:c,dtype:this.dtype});
         let offsets=[];
         for (let i=0;i<c;i++){
             offsets.push(i*h*w);
@@ -962,12 +951,22 @@ class ImgArray {
         return res;
     }
     
+    astype(dtype='float32'){
+        if (! ImgArray.dtypes[dtype]) {
+            console.error('不支持的dtype类型');
+            return;
+        }
+        let res=this.empty(true);
+        res.data=new ImgArray.dtypes[dtype](this.data);
+        res.dtype=dtype;
+        return res;
+    }
+    
     show({vmin=0,vmax=255,cas=null}={}){
         //当数组为图像时，直接在网页中显示图像，方便观察
         //与matploblib的imshow很相似
         if ([1,3,4].includes(this.channel)){
             let data=this.span(vmin,vmax,0,255);
-            console.log(data);
             let img=Img.fromarray(data);
             img.show(cas);
             return img;   //返回显示的图像对象，从而可以调用其方法
@@ -986,7 +985,27 @@ class Img extends ImgArray{
     //Img的图像类型只支持RGBA排列一种
     constructor({height=256,width=256,lazy=false}={}) {
         //调用ImgArray完成初始化
-        super({height,width,channel:4,lazy,dtype:'cuint8'})
+        super({height,width,channel:4,lazy,dtype:'cuint8'});
+        //创建一个保存图像的canvas
+        let cas=document.createElement('canvas');
+        this.cas=cas;
+        this.cas.height=height;
+        this.cas.width=width;
+        this.ctx=cas.getContext('2d');
+        this.iscasnew=false;  //用于标记图像数据和画布哪个新，要用新的去同步旧的
+    }
+
+    update(){
+        //根据标志位进行数据和canvas同步
+        if (this.iscasnew){
+            let imgdata=this.ctx.getImageData(0,0,this.cas.width,this.cas.height);
+            this.data=imgdata.data.slice();  
+            this.iscasnew=false;
+        }
+        else{
+            let imgdata=new ImageData(this.data,this.width,this.height)
+            this.ctx.putImageData(imgdata,0,0)
+        }
     }
 
     static fromarray(imgarray){
@@ -1028,11 +1047,18 @@ class Img extends ImgArray{
     }
 
     static fromimg(imgele){
-        //从<img>元素生成图像
-        //返回是个promise对象，需要使用await
-        return Img.fromurl(imgele.src) 
+        if (! imgele.width) {
+            console.error('no image');
+            return null;
+        }
+        let width=imgele.width 
+        let height=imgele.height
+        let img=new Img({width,height,lazy:true})
+        img.ctx.drawImage(imgele, 0, 0, img.width, img.height);
+        img.iscasnew=true;
+        img.update()
+        return img
     }
-
     static fromurl(imgurl){
         //从链接生成图像
         //返回是个promise对象，需要使用await
@@ -1041,17 +1067,12 @@ class Img extends ImgArray{
             img.src=imgurl;
             img.setAttribute('crossOrigin', '');//解决网络图片跨域的问题
             img.onload=(ex)=>{
-                let vcas=document.createElement('canvas')
-                vcas.width=img.width;
-                vcas.height=img.height;
-                let ctx = vcas.getContext("2d");
-                //ctx.drawImage(img,0,0,width,height);
-                ctx.drawImage(img, 0, 0, img.width, img.height);
-                r(Img.fromcanvas(vcas));
+                r(Img.fromimg(img));
             }
             img.onerror=(ex)=>{return e(ex)}
         })
     }
+
 
     static fromblob(blob){
         //从blob生成图像
@@ -1092,13 +1113,13 @@ class Img extends ImgArray{
             }) 
     }
 
-    static fromvideo(videoele){
+    static fromvideo(videoele,h=null,w=null){
         //从video的视频流中截取图像
         let vcas=document.createElement('canvas');
-        vcas.width=videoele.videoWidth;
-        vcas.height=videoele.videoHeight;
+        vcas.width=w? w : videoele.videoWidth;
+        vcas.height=h? h: videoele.videoHeight;
         let context = vcas.getContext('2d');
-        context.drawImage(video, 0, 0);
+        context.drawImage(videoele, 0, 0);
         return Img.fromcanvas(vcas);
     }
 
@@ -1127,22 +1148,18 @@ class Img extends ImgArray{
             });
     }
     
-    static fromcamera(){
+    static fromcamera(h=null,w=null){
         //从摄像头头获取一幅图像
         //返回是个promise对象，需要使用await
         return new Promise(function (r,e){
             try {
                 navigator.mediaDevices.getUserMedia({ video: true }).then(stream=>{
-                    let cas = document.createElement('canvas');
-                    let context = cas.getContext('2d');
+    
                     let video = document.createElement('video');
                     video.srcObject = stream;
                     video.play();
                     video.addEventListener('loadeddata',(e)=>{
-                        cas.width = video.videoWidth;
-                        cas.height = video.videoHeight;
-                        context.drawImage(video, 0, 0);
-                        r(Img.fromcanvas(cas))
+                        r(Img.fromvideo(video,h,w))
                     }) });
 
                 }
@@ -1152,47 +1169,6 @@ class Img extends ImgArray{
         })
     }
 
-
-    static async fromcameraold() {
-        //**********后期应当删除 */
-        //从摄像头头获取一幅图像
-        //应当删除，但是其中的延时函数写为promise需要掌握
-        try {
-            let stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            let cas = document.createElement('canvas');
-            let context = cas.getContext('2d');
-            let video = document.createElement('video');
-            let oimg=null;
-            video.srcObject = stream;
-            video.play();
-            
-            video.addEventListener('loadeddata',(e)=>{
-                cas.width = video.videoWidth;
-                cas.height = video.videoHeight;
-                console.log(cas.width)
-                context.drawImage(video, 0, 0);
-                oimg=Img.fromcanvas(cas);
-            })
-            //异步的延时单位是ms
-            function delay(n) {
-                return new Promise(function(resolve) {
-                    setTimeout(resolve, n );
-                });
-            }
-            let num=100
-            while(num>0){
-                await delay(30);
-                if (oimg==null)
-                    num--;
-                else
-                    break;
-            }
-            //video.srcObject=null
-            return oimg
-        } catch (error) {
-            console.log('无法获取视频流: ', error);
-        }
-    }
 
     tofile(name='download'){
         //将图像以指定名称保存，只支持png格式
@@ -1205,11 +1181,8 @@ class Img extends ImgArray{
 
     tourl(){
         //将图像转为url
-        let vcas=document.createElement('canvas');
-        vcas.width=this.width;
-        vcas.height=this.height;
-        this.tocanvas(vcas);
-        return vcas.toDataURL('image/png',1);//图像不会被压缩
+        if (! this.iscasnew) this.update;
+        return this.cas.toDataURL('image/png',1);//图像不会被压缩
     }
 
     toimg(imgele){
@@ -1219,6 +1192,7 @@ class Img extends ImgArray{
     }
     
     tocanvas(canvasele,isfull=false){
+        if ( this.iscasnew) this.update();
         //将Img转换为画布元素在网页中展示出来,需要canvasele的宽高与图像一致
         //需要使canvas适配图像的话将isfull置true
         if (isfull){
@@ -1232,6 +1206,7 @@ class Img extends ImgArray{
 
     toarray(droptrans=true){
         //将图像转为数组,droptrans表示通道丢弃，即只保留RGB三个通道的数据
+        if ( this.iscasnew) this.update();
         let channel= droptrans? 3:4;
         if (droptrans){
             let oimgar=new ImgArray({height:this.height,width:this.width,channel});
@@ -1276,101 +1251,69 @@ class Img extends ImgArray{
         return hist;
         }
     }
-
+    
     resize(height=256,width=256){
-        //以指定尺寸缩放图像
-        //oimg=await img.resize(256,256)
-        let img=this.tourl()
+        if (! this.iscasnew) this.update();
         let canvas = document.createElement('canvas');
         canvas.width=width;
         canvas.height=height;
-        var ctx = canvas.getContext('2d');
-        // 将图像绘制到canvas上，并进行缩放
-        return new Promise(function (r,e){
-            let image=new Image()
-            image.src=img
-            image.onload=(x)=>{
-                ctx.drawImage(image, 0, 0, width, height);
-                r(Img.fromcanvas(canvas))
-            }
-            image.onerror=(x)=>{e('resize image error')}
-        })
-    }  
+        let ctx=canvas.getContext('2d');
+        ctx.drawImage(this.cas,0,0,this.width,this.height,0,0,width,height)
+        return Img.fromcanvas(canvas)
+    }
 
     rotate(deg=45){
-        let img=this.tourl();
+        if (! this.iscasnew) this.update();
+        let angleInRadians = deg * Math.PI / 180; // 将角度转换为弧度
         let canvas = document.createElement('canvas');
         canvas.width=this.width;
         canvas.height=this.height;
-        let angleInRadians = deg * Math.PI / 180; // 将角度转换为弧度
         let ctx=canvas.getContext('2d');
-        ctx.translate(canvas.width / 2, canvas.height / 2); // 将原点移动到图像中心
-        ctx.rotate(angleInRadians); // 旋转图像
-        //ctx.translate(-canvas.width / 2, -canvas.height / 2); // 将原点移动到图像左上
-        
-        // 将图像绘制到canvas上，并进行缩放
-        return new Promise(function (r,e){
-            let image=new Image()
-            image.src=img
-            image.onload=(x)=>{
-                ctx.drawImage(image, -image.width / 2, -image.height / 2); // 绘制旋转后的图像
-                //ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-                r(Img.fromcanvas(canvas))
-            }
-            image.onerror=(x)=>{e('loadimage error')}
-        })
+        ctx.translate(this.cas.width / 2, this.cas.height / 2); // 将原点移动到图像中心
+        ctx.rotate(-angleInRadians); // 旋转图像
+        ctx.drawImage(this.cas, -this.width / 2, -this.height / 2); // 绘制旋转后的图像
+        return Img.fromcanvas(canvas);
     }
-
     opacity(value=255){
         //设置图像不透明度，越大越不透明,取值0~255
         //this.fill(value,3); 这种和下面的用哪种实现？
+        if ( this.iscasnew) this.update();
         this.data.forEach(function (x,idx,arr){ if (idx %4==3 ) arr[idx]=value  });
         return this;
     }
 
     drawbox(x=50, y=50, w=50, h=50, color='#000000', linewidth=2, fill=false, fillcolor='#000000'){
         //在图像上画一个指定大小的矩形
-        let canvasele = document.createElement('canvas');
-        canvasele.width = this.width;
-        canvasele.height = this.height;
-
-        let ctx = canvasele.getContext('2d');
-        let imgdata=new ImageData(this.data,this.width,this.height)
-        ctx.putImageData(imgdata,0,0)
+        if ( ! this.iscasnew) this.update();
         // 设置线宽和颜色
-        ctx.lineWidth = linewidth;
-        ctx.strokeStyle = color;
+        this.ctx.lineWidth = linewidth;
+        this.ctx.strokeStyle = color;
     
         // 绘制矩形框
         if (fill) {
-            ctx.fillStyle = fillcolor;
-            ctx.fillRect(x, y, w, h);
+            this.ctx.fillStyle = fillcolor;
+            this.ctx.fillRect(x, y, w, h);
         } else {
-            ctx.strokeRect(x, y, w, h);
+            this.ctx.strokeRect(x, y, w, h);
         }
         // 将绘制后的图像数据更新到Img对象中
-        this.data = ctx.getImageData(0, 0, this.width, this.height).data;
+        //this.data = self.ctx.getImageData(0, 0, this.width, this.height).data;
+        this.iscasnew=true;
         return this;
     }
 
     drawtext({x=50, y=50, text='Hello', color='red', linewidth=2, fontSize=20}={}){
         //在图像上绘制文字
-        let canvasele = document.createElement('canvas');
-        canvasele.width = this.width;
-        canvasele.height = this.height;
-        let ctx = canvasele.getContext('2d');
-        let imgdata=new ImageData(this.data,this.width,this.height)
-        ctx.putImageData(imgdata,0,0)
         // 设置文字属性，包括字体大小
-        ctx.font = `${fontSize}px Arial`; // 设置字体大小和样式
-        ctx.fillStyle = color;
-        ctx.lineWidth = linewidth;
-    
+        if ( ! this.iscasnew) this.update();
+        this.ctx.font = `${fontSize}px Arial`; // 设置字体大小和样式
+        this.ctx.fillStyle = color;
+        this.ctx.lineWidth = linewidth;
         // 写入文字
-        ctx.fillText(text, x, y);
-    
+        this.ctx.fillText(text, x, y);
         // 将绘制后的图像数据更新到Img对象中
-        this.data = ctx.getImageData(0, 0, this.width, this.height).data;
+        //this.data = self.ctx.getImageData(0, 0, this.width, this.height).data;
+        this.iscasnew=true;
         return this;
     }
 
@@ -1379,8 +1322,20 @@ class Img extends ImgArray{
         let cs=cas ? cas : document.createElement('canvas');
         cs.width=this.width;
         cs.height=this.height;
+        if (this.iscasnew) this.update();
         this.tocanvas(cs);
         cas ? null: document.body.appendChild(cs);
         return this;
     }
 }
+
+
+function delay(n) {
+    //异步的延时单位是ms
+    return new Promise(function(resolve) {
+        setTimeout(resolve, n );
+    });
+}
+
+//当将该文件用于ES6 Module时，
+//export {Img, ImgArray} ;
