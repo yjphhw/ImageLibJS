@@ -58,13 +58,24 @@ img.show()
 
 ## Demo
 
+Since ImageLibJS is a JavaScript library, GitHub Pages is used to host the demo.
+
+Click the link below to see the demo:
+
+[ImageLibJS Demo](https://yjphhw.github.io/ImageLibJS/demo.html)
+
+Thanks to GitHub Pages to host the demo. You can use broswer development tools to debug the demo and learn the details of the demo. It's a good start to learn the ImageLibJS by demos. 
+
+Also you can download the repo and run the demo locally.
 All demos are in the examples folder. The demo.html file in this directory is the entrance of all demos. It is recommended to server the demo.html file in a native web server, such as LiveServer in VS Code, or Python's built-in server to get all the demos run properly.
 
-To run the demo, you can use Python's built-in server:
+For example, to run the demo, you can use Python's built-in server:
 1. Open a terminal in the directory where the demo.html file is located, and run the following command:
+   
 ```bash
 python -m http.server
 ```
+
 2. Open the URL displayed in the terminal (like: http://localhost:8000/) in the browser, and you will see the demo.html file.
 
 
@@ -85,6 +96,7 @@ Donations to support this project are welcome.
 
 
 ## History
+* tock: 2024-8-20 deploy all repo on github pages; a major change for Img class, add a canvas to Img, Img.resize() and Img.rotate() methods are rewrited, now they are synchronys; ImgArray and Img classes are supported chainner methods, sunch as ImgArray.random().mean(true).show() ; fix bugs in some demos.
 * tick: 2024-7-20 revise README.md, add and fix several demos, fix bugs in vstack(), optimise fromcanvs() method.
 * tock: 2024-6-20 update README.md, add hstack() and vstack() methods to ImageArray class, and provide hstack.html and vstack.html in examples. ImageLibJS version is 1.2
 * 2024-6-11: The project is created and open-sourced in GitHub.

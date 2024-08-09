@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="../Imagelib.js" ></script>
+    </head>
+    <body>
+        <h1>Load Image from URL</h1>
+        <h1>从URL中加载图像</h1>
+        <p>load a image from URL，the image url should accept CROS.</p>
+        <p>从URL中加载图像。</p>
+        
+        <script>
+            Img.fromurl('../images/dog.png').then(img=>{
+                img.show();
+                console.log(img);
+            })
+        </script>
+    </body>
+
+</html>
