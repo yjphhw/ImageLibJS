@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script src="../Imagelib.js" ></script>
+    </head>
+    <body>
+        <h1>Skin detect</h1>
+        <h1>肤色检测</h1>
+        <p>Detect skins in the image. This is a demo to show the ImageLibJS API usage.</p>
+        <p>检测图像中的皮肤。用于展示本库API的使用方法。</p>
+        <p>参考：侯伟，马燕芹，《轻松学数字图像处理》，清华大学出版社，2024</p>
+        
+        <script>
+            function isskin(pixelvector){
+                //pixelvector is a array with length 3, represents color r,g,b, with range(0,255)
+                y=0.299*pixelvector[0]+0.587*pixelvector[1]+0.114*pixelvector[2];
+                i=0.596*pixelvector[0]-0.275*pixelvector[1]-0.321*pixelvector[2];
+                z=(i/58)**2+((y-142)/104)**2
+                if (y<235 && i>12 && z<1){
+                    return 255;
+                }else{
+                    return 0;
+                }
+            }
+            Img.fromurl('../images/hand.png').then(img=>{
+                img.show();
+                console.log(img);
+                let arr=img.toarray();
+                console.log(arr)
+                let result=arr.apply_along_channel(isskin);
+                result.show();
+            })
+        </script>
+    </body>
+
+</html>

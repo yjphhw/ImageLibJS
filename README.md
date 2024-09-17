@@ -56,17 +56,17 @@ img.drawtext()
 img.show()
 ```
 
-## Demo
+## Demos
 
-Since ImageLibJS is a JavaScript library, GitHub Pages is used to host the demo.
+Since ImageLibJS is a JavaScript library, GitHub Pages is used to host demos.
 
-Click the link below to see the demo:
+Click the link below to see demos:
 
-[ImageLibJS Demo](https://yjphhw.github.io/ImageLibJS/demo.html)
+[ImageLibJS Demos](https://yjphhw.github.io/ImageLibJS/demo.html)
 
-Thanks to GitHub Pages to host the demo. You can use broswer development tools to debug the demo and learn the details of the demo. It's a good start to learn the ImageLibJS by demos. 
+Thanks to GitHub Pages to host demos. You can use broswer development tools to debug demos and learn the details of demos. It's a good start to learn the ImageLibJS by demos. 
 
-Also you can download the repo and run the demo locally.
+Also you can download the repo and run demos locally.
 All demos are in the examples folder. The demo.html file in this directory is the entrance of all demos. It is recommended to server the demo.html file in a native web server, such as LiveServer in VS Code, or Python's built-in server to get all the demos run properly.
 
 For example, to run the demo, you can use Python's built-in server:
@@ -96,6 +96,7 @@ Donations to support this project are welcome.
 
 
 ## History
+* tick: 2024-9-20 add skin detection demo; add comments on some ImgArray methods; make decision to implement fliplr() , flipud() , rolllr(), rollud() methods in next month.
 * tock: 2024-8-20 deploy all repo on github pages; a major change for Img class, add a canvas to Img, Img.resize() and Img.rotate() methods are rewrited, now they are synchronys; ImgArray and Img classes are supported chainner methods, sunch as ImgArray.random().mean(true).show() ; fix bugs in some demos.
 * tick: 2024-7-20 revise README.md, add and fix several demos, fix bugs in vstack(), optimise fromcanvs() method.
 * tock: 2024-6-20 update README.md, add hstack() and vstack() methods to ImageArray class, and provide hstack.html and vstack.html in examples. ImageLibJS version is 1.2
