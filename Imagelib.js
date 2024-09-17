@@ -4,7 +4,11 @@ class ImgArray {
     //ImageArray 更重要的是数组，提供数组的计算，但是数组的运算支持上偏向于图像处理
     //后期可以仿照Numpy转为强大的数组计算库
     //支持多种数据类型初始化，但仅对float32进行了验证，其他类型未验证
+    //注意文档：https://zhuanlan.zhihu.com/p/153332773
 
+    /**
+     * dtypes 是一个静态变量，对于存储数组数据的类型与JS TypedArray的映射关系
+     */
     static dtypes={
         float32:Float32Array,
         uint8:Uint8Array,
@@ -14,7 +18,16 @@ class ImgArray {
         cuint8:Uint8ClampedArray,
     };
     
-    //只提供三维数组，维度分别是height，width，channel
+    /**
+     * constructor() 数组初始化函数，采用对象的方式进行初始化，提供了默认值
+     * 只实现了三维数组，各维度类比于图像的高，宽和通道，即height，width，channel
+     * @param {Int} height，表示数组（图像）的高度，默认值是256
+     * @param {Int} width， 表示数组（图像）的宽度，默认值是256
+     * @param {Int} channel ，表示数组（图像）的通道数，默认值是3
+     * @param {Int} lazy，默认值为false，表示进行初始化
+     * @param {String} dtype, 默认为'float32'，可选的值为dtypes中的值
+     * @return  
+     */
     constructor({height=256, width=256,channel=3,lazy=false,dtype='float32'}={}) {
         this.height = height;
         this.width = width;
@@ -27,33 +40,57 @@ class ImgArray {
         }
     }
 
+    /**
+     * initarray() 根据数组的基本信息，为数组分配存储空间
+     * 当数组初始化时lazy=false时调用，分配空间，分配后空间的值为0
+     * 也可以利用其副作用重新分配空间
+     */
     initarray(){
-        if (this.data==null) this.data=new ImgArray.dtypes[this.dtype](this.numel);
+        if (this.data==null) {
+            this.data=new ImgArray.dtypes[this.dtype](this.numel);
+        }
         return this;
     }
 
+    /**
+     * shape，用属性的方式获取数组的形状，包括高，宽，通道
+     */
     get shape(){
         //返回数组的形状
         return {height:this.height,width:this.width,channel:this.channel};
     }
 
+    /**
+     * size，用属性的方式获取数组元素的个数
+     */
     get size(){
         //返回数组的元素个数
         return this.numel;
     }
 
+    /**
+     * elbytes，用属性的方式获取数组元素占用的字节数
+     */
     get elbytes(){ 
         //每个元素的字节数
         return ImgArray.dtypes[this.dtype].BYTES_PER_ELEMENT;
     }
 
+    /**
+     * bytesize，用属性的方式获取数组占用的字节数
+     */
     get bytesize(){
         //返回数组的字节大小
         return this.numel*this.elbytes;
     }
 
+    /**
+     * elidxtoidx(elidx=0)，将元素的索引转为数组的三个索引值[h,w,c]
+     * 该函数是一个内部函数，一般由其他方法调用，不对外使用
+     * @param {Int} elidx，默认值为0，表示获取第一个元素，即[0,0,0]
+     * @return {[Int, Int, Int]} 为一个长度为三的数组，
+     */
     elidxtoidx(elidx=0){
-        //将元素的索引转为数组的三个索引值[h,w,c]
         if (elidx<0 || elidx>this.numel-1) return ;
         let hwidth=this.width*this.channel;
         let hidx=parseInt(elidx/hwidth);
@@ -63,14 +100,28 @@ class ImgArray {
         return [hidx,widx,cidx];
     }
 
+    /**
+     * idxtoelidx(hidx,widx,cidx)，将数组的三个索引值[h,w,c]，转为元素索引elidx
+     * 该函数是一个内部函数，一般由其他方法调用，不对外使用
+     * @param {Int} hidx，数组元素的高索引，也就是第0维度的索引
+     * @param {Int} widx，数组元素的宽索引，也就是第1维度的索引
+     * @param {Int} cidx，数组元素的通道索引，也就是第2维度的索引
+     * @return {Int} 元素在数组内的真实索引值
+     */
     idxtoelidx(hidx,widx,cidx){
         //从数组索引转为元素索引
         return (hidx*this.width+widx)*this.channel+cidx;
     }
 
+    /**
+     * checkisvalid(hidx,widx,cidx)，检查索引值是否合法，即是否在数组范围内
+     * 目前只支持正索引
+     * @param {Int} hidx，数组元素的高索引，也就是第0维度的索引
+     * @param {Int} widx，数组元素的宽索引，也就是第1维度的索引
+     * @param {Int} cidx，数组元素的通道索引，也就是第2维度的索引
+     * @return {Bool} 元素在数组内的真实索引值
+     */
     checkisvalid(hidx,widx,cidx){
-        //获取元素和设置元素
-        //检查数组索引是否合法，目前只支持正索引
         if (hidx+1>this.height  || hidx<0 ) return false;
         if (widx+1>this.width   || widx<0)  return false;
         if (cidx+1>this.channel || cidx<0)  return false;
@@ -79,14 +130,17 @@ class ImgArray {
 
     getel(hidx,widx,cidx){
         //由数组索引获取元素值
-        if (this.checkisvalid(hidx,widx,cidx))
+        // TODO: 当数组为lazy 时，需要判断是否初始化，要处理未初始化的情况
+        if (this.checkisvalid(hidx,widx,cidx)){
             return this.data.at(this.idxtoelidx(hidx,widx,cidx));
-        console.error('数组元素索引越界')
+        }
+        console.error('数组元素索引越界');
         return null;
     }
 
     setel(hidx,widx,cidx,value){
         //根据数组索引设置元素值
+        // TODO: 当数组为lazy 时，需要判断是否初始化，要处理未初始化的情况
         if (this.checkisvalid(hidx,widx,cidx)){
             this.data[this.idxtoelidx(hidx,widx,cidx)]=value;
             return this;  //以供链式调用
@@ -220,6 +274,22 @@ class ImgArray {
             offsetidx+=tmpimgarrs[imgidx].numel;
         }
         return newarray;
+    }
+    
+    fliplr(){
+        // TODO: 左右翻转，在宽度轴上
+    }
+    
+    flipud(){
+        // TODO: 上下翻转，在宽度轴上
+    }
+
+    rollud(){
+        // TODO: 上下滚动
+    }
+
+    rolllr(){
+        // TODO: 左右滚动
     }
 
     //数组点运算
@@ -1181,7 +1251,7 @@ class Img extends ImgArray{
 
     tourl(){
         //将图像转为url
-        if (! this.iscasnew) this.update;
+        if (! this.iscasnew) this.update();
         return this.cas.toDataURL('image/png',1);//图像不会被压缩
     }
 
@@ -1337,5 +1407,5 @@ function delay(n) {
     });
 }
 
-//当将该文件用于ES6 Module时，
+//当将该文件用于ES6 Module时，取消以下注释，导出Img和ImgArray类
 //export {Img, ImgArray} ;
