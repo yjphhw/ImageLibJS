@@ -96,9 +96,10 @@ Donations to support this project are welcome.
 
 
 ## History
-* tick: 2024-9-20 add skin detection demo; add comments on some ImgArray methods; make decision to implement fliplr() , flipud() , rolllr(), rollud() methods in next month.
-* tock: 2024-8-20 deploy all repo on github pages; a major change for Img class, add a canvas to Img, Img.resize() and Img.rotate() methods are rewrited, now they are synchronys; ImgArray and Img classes are supported chainner methods, sunch as ImgArray.random().mean(true).show() ; fix bugs in some demos.
-* tick: 2024-7-20 revise README.md, add and fix several demos, fix bugs in vstack(), optimise fromcanvs() method.
-* tock: 2024-6-20 update README.md, add hstack() and vstack() methods to ImageArray class, and provide hstack.html and vstack.html in examples. ImageLibJS version is 1.2
+* tock: 2024-10-20: enhance fill() method, fill() method currently suport four ways to fill a ImgArray, demo is at [Demo fill()](https://yjphhw.github.io/ImageLibJS/examples/fill.html), this feature is made by Shucuo Fu. rolllud() and rolllr() methods are added, corresponding demo is at [Demo roll()](https://yjphhw.github.io/ImageLibJS/examples/roll.html). fliplr() and flipud() methods are added, rotate on ImgArray is implemented.
+* tick: 2024-9-20: add skin detection demo; add comments on some ImgArray methods; make decision to implement fliplr() , flipud() , rolllr(), rollud() methods in next month.
+* tock: 2024-8-20: deploy all repo on github pages; a major change for Img class, add a canvas to Img, Img.resize() and Img.rotate() methods are rewrited, now they are synchronys; ImgArray and Img classes are supported chainner methods, sunch as ImgArray.random().mean(true).show() ; fix bugs in some demos.
+* tick: 2024-7-20: revise README.md, add and fix several demos, fix bugs in vstack(), optimise fromcanvs() method.
+* tock: 2024-6-20: update README.md, add hstack() and vstack() methods to ImageArray class, and provide hstack.html and vstack.html in examples. ImageLibJS version is 1.2
 * 2024-6-11: The project is created and open-sourced in GitHub.
 * 2023-12: The project is started in a Talent Student Training Program. The student Jing Li(李静) and Wei Hou(me) write the first version of ImageLibJS in local computers.

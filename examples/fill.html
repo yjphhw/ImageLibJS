@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>fill方法示例</title>
+        <script src="../Imagelib.js" ></script>
+    </head>
+    <body>
+        <h1>4 ways to use fill() method</h1>
+        <h1>4种fill()方法的用法：</h1>
+        <ul>
+            <li>fill(255)填充所有元素值为255；</li>
+            <li>fill(255,1)只对1通道填充为255；</li>
+            <li>fill(255,[0,1])对0，1通道填充均填充为255;</li>
+            <li>fill([255,120],[0,2])对0通道填充255，对2能道填充120;</li>
+        </ul>
+    
+        <p>下面会显示一个256x512的RGB为[237,145,33]的胡萝卜色图像。代码可从控制台查看！</p>
+    <script>
+        //方法一
+        //生成一个高256，宽512的数组
+        let imgarr = new ImgArray({ height: 256, width: 512 });
+        imgarr.fill([237, 145, 33], [0, 1, 2]); //将数组的第0，1，2个通道分别填充237，145，33
+        imgarr.show();      //显示图像
+    </script>
+    <p>下面会显示一个256x512的RGB为RGB为[56,94,15]的绿土色图像.代码可从控制台查看！</p>
+    <script>
+        let img = new ImgArray({ height: 256, width: 512 });
+        img.fill([56, 94, 15], [0, 1, 2]);
+        img.show();      //显示图像
+    </script>
+    <p>下面依旧会显示一个RGB为[56,94,15]的绿土色图像，但是输入时打乱颜色值和通道的输入顺序.代码可从控制台查看！</p>
+    <script>
+        let img_disturb = new ImgArray({ height: 256, width: 512 });
+        img_disturb.fill([94, 15, 56], [1, 2, 0]);  //即使通道输入顺序不是正序，也依旧与打乱后的颜色值一一对应生成土绿色
+        img_disturb.show();      //显示图像
+    </script>
+        <h1>fill()的四种用法续</h1>
+        <script>
+            //fill的4种用法
+            //fill(255)填充所有元素值为255；
+            //fill(255,1)只对1通道填充为255；
+            //fill(255,[0,1])对0，1通道填充均填充为255
+            //fill([255,120],[0,2])对0通道填充255，对2能道填充120
+            
+            //用法一
+            imgarr=new ImgArray({height:256,width:512,channel:3}); 
+            imgarr.fill(128);
+            imgarr.show()
+            
+            //用法二
+            imgarr=new ImgArray({height:256,width:512,channel:3}); 
+            imgarr.fill(255,0); //将数组的第0个通道填充255，即红色
+            imgarr.show();      //显示图像
+            
+            //用法三
+            imgarr=new ImgArray({height:256,width:512,channel:3}); 
+            imgarr.fill(255,[0,2]); //将数组的第0和2个通道填充255，即紫色
+            imgarr.show();      //显示图像
+            
+            //用法四
+            imgarr=new ImgArray({height:256,width:512,channel:3}); 
+            imgarr.fill([55,200,150],[0,1,2]); //将数组的第0和2个通道填充255，即紫色
+            imgarr.show();      //显示图像
+
+        </script>
+        <h1>exercise</h1>
+        <p>请参考代码生成一幅128x256的玫瑰红色的图像，并显示在下方。（玫瑰红色的RGB为[188,143,143]。
+            并尝试打乱颜色值和通道的输入顺序），体验一一对应的实现效果</p>
+    </body>
+
+</html>

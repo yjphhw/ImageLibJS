@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>滚动示例</title>
+        <script src="../Imagelib.js" ></script>
+    </head>
+    <body>
+        <h1>roll() method usage</h1>
+        <h1>roll()滚动示例</h1>
+        <p>rolllr()左右滚动，rollud()上下滚动，rotate()旋转一定角度。</p>
+        <p>rolllr() left-right roll， rollud() up-down  roll ，rotate() rotate a degree.</p>
+        <canvas></canvas>
+        <canvas></canvas>
+        <canvas></canvas>
+        <canvas></canvas>
+        <br>
+        <script>
+            let cass=[...document.querySelectorAll('canvas')];
+            Img.fromurl('../images/dog.png').then(img=>{
+                img.show(cass[0]);
+                let v=0;
+                setInterval(() => {
+                    img.rollud(v++).show(cass[1]);
+                    img.rolllr(v).show(cass[2]);
+                    img.rotate(v).show(cass[3]);
+                }, 30);
+            })
+        </script>
+    </body>
+
+</html>
