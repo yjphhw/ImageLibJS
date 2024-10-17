@@ -128,6 +128,13 @@ class ImgArray {
         return true;
     }
 
+    /**
+     * getel(hidx,widx,cidx)，根据数组索引获取元素值
+     * @param {Int} hidx 
+     * @param {Int} widx 
+     * @param {Int} cidx 
+     * @returns {Number} 元素值
+     */
     getel(hidx,widx,cidx){
         //由数组索引获取元素值
         // TODO: 当数组为lazy 时，需要判断是否初始化，要处理未初始化的情况
@@ -138,9 +145,16 @@ class ImgArray {
         return null;
     }
 
+    /**
+     * setel(hidx,widx,cidx,value)，根据索引设置指定元素的值
+     * @param {Int} hidx 
+     * @param {Int} widx 
+     * @param {Int} cidx 
+     * @param {Number} value
+     * @returns {ImgArray} 该数组对象本身
+     */
     setel(hidx,widx,cidx,value){
-        //根据数组索引设置元素值
-        // TODO: 当数组为lazy 时，需要判断是否初始化，要处理未初始化的情况
+        this.initarray();
         if (this.checkisvalid(hidx,widx,cidx)){
             this.data[this.idxtoelidx(hidx,widx,cidx)]=value;
             return this;  //以供链式调用
@@ -148,17 +162,41 @@ class ImgArray {
         console.error('数组元素索引越界')
         return null;
     }
-
+    
+    /**
+     * fill(value,cidx)，填充数组的值
+     * @param {Int,Int,Array,Int} value 
+     * @param {null,Int,Array,Array} cidx 
+     */
     fill(value=3,cidx=null){
         //数组常值填充，指定某一个通道的数据进行填充
-        //cidx可以是null，可以是单个值，可以是数组，一次性设置多个通道
+        //fill(255)填充所有元素值为255；
+        //fill(255,1)只对1通道填充为255；
+        //fill(255,[0,1])对0，1通道填充均填充为255
+        //fill([255,120],[0,2])对0通道填充255，对2道填充120
         this.initarray();
         if (cidx==null) {
             this.data.fill(value);
             return this;
         }
         if (cidx instanceof Array){
-            this.data.forEach( (x,idx,arr)=>{ if (cidx.includes(idx %this.channel) ) arr[idx]=value; }, this);
+            if (value instanceof Array){
+                if (value.length==cidx.length){
+                    let map={};
+                    cidx.forEach( (x,idx)=>{ map[x]=value[idx]; });
+                    this.data.forEach( (x,idx,arr)=>{  
+                        let ci=idx %this.channel; 
+                        if (map[ci]) arr[idx]=map[ci];
+                        }, this);
+                }
+                else{
+                console.error("value数组长度与cidx数组长度不一致");
+                }
+            }
+            else
+            {
+                this.data.forEach( (x,idx,arr)=>{ if (cidx.includes(idx %this.channel) ) arr[idx]=value; }, this);
+            }
         }
         else {
             this.data.forEach( (x,idx,arr)=>{ if (idx %this.channel==cidx ) arr[idx]=value; }, this);
@@ -278,20 +316,85 @@ class ImgArray {
     
     fliplr(){
         // TODO: 左右翻转，在宽度轴上
+        let outarr=this.empty(false);
+        for (let hidx=0;hidx<this.height;hidx++){
+            for (let widx=0;widx<this.width;widx++){
+                for (let cidx=0;cidx<this.channel;cidx++){
+                    let tmpv=this.getel(hidx,widx,cidx);
+                    outarr.setel(hidx,this.width-widx-1,cidx,tmpv);
+                }
+            }
+        }
+        return outarr
     }
     
     flipud(){
         // TODO: 上下翻转，在宽度轴上
+        let outarr=this.empty(false);
+        for (let hidx=0;hidx<this.height;hidx++){
+            for (let widx=0;widx<this.width;widx++){
+                for (let cidx=0;cidx<this.channel;cidx++){
+                    let tmpv=this.getel(hidx,widx,cidx);
+                    outarr.setel(this.height-hidx-1,widx,cidx,tmpv)
+                }
+            }
+        }
+        return outarr
     }
 
-    rollud(){
+    rollud(dy=100){
         // TODO: 上下滚动
+        dy=-Math.sign(dy)*(Math.abs(dy)%this.height);
+        let newarr=this.empty(false);
+        for (let hidx=0;hidx<this.height;hidx++){
+            for (let widx=0;widx<this.width;widx++){
+                for (let cidx=0;cidx<this.channel;cidx++){
+                    let tmpv=this.getel(hidx,widx,cidx);
+                    newarr.setel((hidx+dy+this.height)%this.height,widx,cidx,tmpv)
+                }
+            }
+        }
+        return newarr;
     }
 
-    rolllr(){
+    rolllr(dx=100){
         // TODO: 左右滚动
+        dx=Math.sign(dx)*(Math.abs(dx)%this.width);
+        let newarr=this.empty(false);
+        for (let hidx=0;hidx<this.height;hidx++){
+            for (let widx=0;widx<this.width;widx++){
+                for (let cidx=0;cidx<this.channel;cidx++){
+                    let tmpv=this.getel(hidx,widx,cidx);
+                    newarr.setel(hidx,(widx+dx+this.width)%this.width,cidx,tmpv)
+                }
+            }
+        }
+        return newarr;
     }
 
+    rotate(degree=90){
+        degree=degree%360;
+        let rad=degree*Math.PI/180;
+        let newarr=this.empty(false);
+        let cx=(this.width-1)/2;
+        let cy=(this.height-1)/2;
+        let cos=Math.cos(rad);
+        let sin=Math.sin(rad);
+        let dx=cx-cx*cos+cy*sin;
+        let dy=cy-cx*sin-cy*cos;
+        for (let hidx=0;hidx<this.height;hidx++){
+            for (let widx=0;widx<this.width;widx++){
+                let oldwidx=cos*widx-sin*hidx+dx;
+                let oldhidx=sin*widx+cos*hidx+dy;
+                if (! this.checkisvalid(oldhidx,oldwidx,0)) continue;
+                for (let cidx=0;cidx<this.channel;cidx++){
+                    let tmpv=this.getel(oldhidx,oldwidx,cidx);
+                    newarr.setel(hidx,widx,cidx,tmpv);
+                }
+            }
+        }
+        return newarr        
+    }
     //数组点运算
     vectorize(func){
         //逐元素的运算，function的形式参考array.map接受的回调函数的形式
