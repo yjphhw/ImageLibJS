@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>threshold示例</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>threshold() method usage</h1>
+    <h1>threshold()示例,根据传入的method的参数不同，实现不同的效果</h1>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <br>
+    <script>
+        let cass = [...document.querySelectorAll('canvas')];
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]);
+            img.threshold(100, 'binary', 255).show(cass[1]);
+            img.threshold(100, 'truncate', 255).show(cass[2]);
+            img.threshold(100, 'binary_inv', 255).show(cass[3]);
+            img.threshold(100, 'truncate_inv', 255).show(cass[4]);
+            img.threshold(100, 'tozero', 255).show(cass[5]);
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>ImgArray示例</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>Generate any color image</h1>
+    <h1>生成任意颜色图像</h1>
+    <p>In this example, the fill() method was used.
+        The fill() method uses constant values or arrays to fill arrays or specific channels.
+        When the color values and channels are arrays of the same length, a one-to-one correspondence between colors and
+        channels can be achieved.
+        The fill() method is an in place operation.
+        ImageArray and Img have the same purpose.
+    </p>
+    <p>Below will be several color images displayed, generate by ImageArray and Img seperately.</p>
+    <p>下面会显示一个256x512的RGB为[237,145,33]的胡萝卜色图像。代码可从控制台查看！</p>
+    <script>
+        //方法一
+        //生成一个高256，宽512的数组
+        let imgarr = new ImgArray({ height: 256, width: 512 });
+        imgarr.fill([237, 145, 33], [0, 1, 2]); //将数组的第0，1，2个通道分别填充237，145，33
+        imgarr.show();      //显示图像
+    </script>
+    <p>下面会显示一个256x512的RGB为RGB为[56,94,15]的绿土色图像.代码可从控制台查看！</p>
+    <script>
+
+        let img = new ImgArray({ height: 256, width: 512 });
+        img.fill([56, 94, 15], [0, 1, 2]);
+        img.show();      //显示图像
+    </script>
+    <p>下面依旧会显示一个RGB为[56,94,15]的绿土色图像，但是输入时打乱颜色值和通道的输入顺序.代码可从控制台查看！</p>
+    <script>
+        let img_disturb = new ImgArray({ height: 256, width: 512 });
+        img_disturb.fill([94, 15, 56], [1, 2, 0]);  //即使通道输入顺序不是正序，也依旧与打乱后的颜色值一一对应生成土绿色
+        img_disturb.show();      //显示图像
+    </script>
+    <h1>exercise</h1>
+    <p>请参考代码生成一幅128x256的玫瑰红色的图像，并显示在下方。（玫瑰红色的RGB为[188,143,143]。
+        并尝试打乱颜色值和通道的输入顺序），体验一一对应的实现效果</p>
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>create ImgArray</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>ImgArray.abs</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        abs()
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        calculate the absolute value of ImgArray. return a new ImgArray.
+    </p>
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>No Parameter</li>
+    </ul>
+
+    <h2>Demons</h2>
+
+    <!--A Demo-->
+    <h3>Demo1</h3>
+    <p>create a random array, calculate the absolute value.</p>
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+    <h4>Result</h4>
+    <div id="demo1result"></div>
+
+    <script id="demo1code">        
+        var arra=ImgArray.random({width:2,height:3,channel:4,vmin:-0.5,vmax:0.5});
+        //abs() method calculate the absolute value
+        var arrb=arra.abs();
+    </script>
+
+    <script>
+        var arrstr = arra.toString();
+        var result = document.getElementById("demo1result");
+        var code = document.getElementById("demo1code");
+        var demo1 = document.getElementById("demo1");
+        demo1.innerText = code.innerText;
+        result.innerText = "input:arra\n"+arrstr+"\n\noutput:arrb\n"+arrb.toString();
+    </script>
+
+</body>
+</html>

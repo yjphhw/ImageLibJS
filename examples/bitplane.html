@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>求取比特值示例</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>bitplane() method usage</h1>
+    <h1>bitplane()求取指定通道比特面示例</h1>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas> 
+    <br>
+    <script>
+        let cass = [...document.querySelectorAll('canvas')];
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]);
+            img.bitplane(0, 0).show({cas:cass[1]});
+            img.bitplane(0, 1).show({cas:cass[2]});
+            img.bitplane(0, 2).show({cas:cass[3]});
+            img.bitplane(0, 3).show({cas:cass[4]});
+            img.bitplane(0, 4).show({cas:cass[5]});
+            img.bitplane(0, 5).show({cas:cass[6]});
+            img.bitplane(0, 6).show({cas:cass[7]});
+            img.bitplane(0, 7).show({cas:cass[8]});
+            
+            img.bitplane(1, 3).show({cas:cass[9]});
+            img.bitplane(2, 6).show({cas:cass[10]});
+        })
+    </script>
+</body>
+
+</html>

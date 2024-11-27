@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>截断示例</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>clamp() method usage</h1>
+    <h1>clamp()截断示例，使用时传入截断的最小值和最大值</h1>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas>
+    <br>
+    <script>
+        let cass = [...document.querySelectorAll('canvas')];
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]);
+            img.clamp(0, 100).show(cass[1]);
+            img.clamp(100, 200).show(cass[2]);
+            img.clamp(200, 255).show(cass[3]);
+        })
+    </script>
+</body>
+
+</html>

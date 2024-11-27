@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>修正函数示例</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>relu() method usage</h1>
+    <h1>relu()修正函数示例，取输入值和数据之间的最大值</h1>
+    <canvas></canvas>
+    <canvas></canvas>
+    <br>
+    <script>
+        let cass = [...document.querySelectorAll('canvas')];
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]);
+            img.relu(100).show(cass[1]);
+        })
+    </script>
+</body>
+
+</html>

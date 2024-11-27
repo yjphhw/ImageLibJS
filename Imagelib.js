@@ -19,6 +19,14 @@ class ImgArray {
     };
     
     /**
+     * 
+     * @returns 所有支持的数据类型
+     */
+    static get dtypenames(){
+        return Object.keys(this.dtypes);
+    }
+
+    /**
      * constructor() 数组初始化函数，采用对象的方式进行初始化，提供了默认值
      * 只实现了三维数组，各维度类比于图像的高，宽和通道，即height，width，channel
      * @param {Int} height，表示数组（图像）的高度，默认值是256
@@ -151,7 +159,7 @@ class ImgArray {
      * @param {Int} widx 
      * @param {Int} cidx 
      * @param {Number} value
-     * @returns {ImgArray} 该数组对象本身
+     * @returns {this} 该数组对象本身
      */
     setel(hidx,widx,cidx,value){
         this.initarray();
@@ -167,6 +175,7 @@ class ImgArray {
      * fill(value,cidx)，填充数组的值
      * @param {Int,Int,Array,Int} value 
      * @param {null,Int,Array,Array} cidx 
+     * @returns {this} 该数组对象本身
      */
     fill(value=3,cidx=null){
         //数组常值填充，指定某一个通道的数据进行填充
@@ -204,6 +213,11 @@ class ImgArray {
         return this;
     }   
 
+    /**
+     * issameshape(bimgarr)，两数组形状是否相同
+     * @param {ImgArray} bimgarr 
+     * @returns {Boolean} 
+     */
     issameshape(bimgarr){
         //判断两数组形状是否相同
         return  this.height===bimgarr.height &&
@@ -211,16 +225,31 @@ class ImgArray {
                 this.channel===bimgarr.channel;
     }
 
+    /**
+     * issamehw(bimgarr)，两数组宽高是否相同
+     * @param {ImgArray} bimgarr 
+     * @returns {Boolean} 
+     */
     issamehw(bimgarr){
         //判断两数组的宽高是否相同
         return this.height===bimgarr.height && this.width===bimgarr.width;
     }
 
+    /**
+     * issamech(bimgarr)，判断两数组的通道是否相同
+     * @param {ImgArray} bimgarr 
+     * @returns {Boolean} 
+     */
     issamech(bimgarr){
         //判断两数组的通道是否相同
         return this.channel===bimgarr.channel 
     }
 
+    /**
+     * dstack(...imgars)，将多个数组沿通道堆叠，数组的宽高必须要相同
+     * @param {ImgArray or ImgArray, ImgArray ...} 一个或多个数组 
+     * @returns {ImgArray} 
+     */
     dstack(...imgars){
         //imgars里为ImgArray实例，应当要具备相同的尺寸
         //将该数组与另外多个高宽一致的数组堆叠为一个新数组
@@ -251,7 +280,12 @@ class ImgArray {
         }
         return newimgarr;
     }
-
+    
+    /**
+     * dsplit(...channels)，提取数组的某些通道
+     * @param  {...Int} channels 
+     * @returns {Array of ImgArray} [ImgArray, ImgArray, ...]
+     */
     dsplit(...channels){
         //将数组沿通道进行分割
         //可获取指定通道的数据
@@ -271,6 +305,11 @@ class ImgArray {
         return arr;
     }
 
+    /**
+     * hstack(...imgars)，水平堆叠数组
+     * @param  {...ImgArray} imgars 
+     * @returns {ImgArray} 水平堆叠后的结果
+     */
     hstack(...imgars){
         //沿宽度方向叠加
         //需要数组的高和通道数一置，但是该函数不进行检测，由用户来保证
@@ -284,7 +323,6 @@ class ImgArray {
         }
         let newimgarr=new ImgArray({height:this.height,width:newwidth,channel:this.channel})
 
-        
         for (let hidx=0;hidx<newimgarr.height;hidx++){
             for (let widx=0;widx<newimgarr.width;widx++){
                 let imgidx=widths.map(x=> widx<x ).indexOf(true);
@@ -297,6 +335,11 @@ class ImgArray {
         return newimgarr;
     }
 
+    /**
+     * vstack(...imgars)，垂直堆叠数组
+     * @param  {...ImgArray} imgars 
+     * @returns {ImgArray} 垂直堆叠后的结果
+     */
     vstack(...imgars){
         //沿高度方向叠加
         //需要数组的宽和通道数一置，但是该函数不进行检测，由用户来保证
@@ -314,8 +357,12 @@ class ImgArray {
         return newarray;
     }
     
+    
+    /**
+     * filiplr(),在宽度轴上，进行左右翻转
+     * @returns {ImgArray}
+     */
     fliplr(){
-        // TODO: 左右翻转，在宽度轴上
         let outarr=this.empty(false);
         for (let hidx=0;hidx<this.height;hidx++){
             for (let widx=0;widx<this.width;widx++){
@@ -328,8 +375,11 @@ class ImgArray {
         return outarr
     }
     
+    /**
+     * flipud(), 在高度轴上，进行上下翻转
+     * @returns {ImgArray}
+    */
     flipud(){
-        // TODO: 上下翻转，在宽度轴上
         let outarr=this.empty(false);
         for (let hidx=0;hidx<this.height;hidx++){
             for (let widx=0;widx<this.width;widx++){
@@ -342,8 +392,12 @@ class ImgArray {
         return outarr
     }
 
+    /**
+     * rollud(dy=100)，上下滚动
+     * @param {Int} dy 滚动距离，默认为100
+     * @returns {ImgArray} 滚动后的结果
+     */
     rollud(dy=100){
-        // TODO: 上下滚动
         dy=-Math.sign(dy)*(Math.abs(dy)%this.height);
         let newarr=this.empty(false);
         for (let hidx=0;hidx<this.height;hidx++){
@@ -357,8 +411,12 @@ class ImgArray {
         return newarr;
     }
 
+    /**
+     * rolllr(dx=100)，左右滚动
+     * @param {Int} dx 滚动距离，默认为100
+     * @returns {ImgArray} 滚动后的结果
+     */
     rolllr(dx=100){
-        // TODO: 左右滚动
         dx=Math.sign(dx)*(Math.abs(dx)%this.width);
         let newarr=this.empty(false);
         for (let hidx=0;hidx<this.height;hidx++){
@@ -372,6 +430,11 @@ class ImgArray {
         return newarr;
     }
 
+    /**
+     * rotate(degree=90)，旋转
+     * @param {Int} degree 旋转角度，默认为90
+     * @returns {ImgArray} 旋转后的结果
+     */
     rotate(degree=90){
         degree=degree%360;
         let rad=degree*Math.PI/180;
@@ -395,7 +458,14 @@ class ImgArray {
         }
         return newarr        
     }
+    
     //数组点运算
+    
+    /**
+     * vectorize(func)，逐元素运算
+     * @param {Function} func 函数，形式为(x)=>y
+     * @returns {ImgArray} 运算结果
+     */
     vectorize(func){
         //逐元素的运算，function的形式参考array.map接受的回调函数的形式
         let newarr=this.empty(true);
@@ -404,98 +474,161 @@ class ImgArray {
     }
 
     //数组间的运算
+    
+    /**
+     * operateArrayOperation(otherArray,func)，数组间运算，运算方式由参数func决定
+     * @param {ImgArray} otherArray，与当前数组尺寸相同
+     * @param {Function} func，是一个具有两个参数的函数，返回一个值
+     * @returns {ImgArray}
+     */
     operateArrayOperation(otherArray, func) {
         if ( this.issameshape(otherArray)) {
             let newarr = this.empty(true);
             newarr.data = this.data.map((val, idx) => func(val, otherArray.data[idx]));
             return newarr;
         } else {
-            console.error('两数组的尺寸不匹配。');
+            console.error('两数组的尺寸不匹配或类型不匹配。');
             return null;
         }
     }
 
+    /**
+     * add(otherArrayOrValue)，数组加法，支持常数加法
+     * @param {ImgArray|Number} otherArrayOrValue，与当前数组尺寸相同，或者为一个常数
+     * @returns {ImgArray}
+     */
     add(otherArrayOrValue) {
-        //对常数或同尺寸数组进行逐位加法
         const addFunc = (x, y) => x + y;
         if (typeof otherArrayOrValue === 'number') {
             return this.vectorize(x => addFunc(x, otherArrayOrValue));
         } else if (otherArrayOrValue instanceof ImgArray) {
             return this.operateArrayOperation(otherArrayOrValue, addFunc);
         }else {
-            console.error('无效的操作数');
+            console.error('无效的操作数。');
             return null;
         }
     }
 
+    /**
+     * sub(otherArrayOrValue)，数组减法，支持常数或数组
+     * @param {ImgArray | Number} otherArrayOrValue 
+     * @returns {ImgArray}
+     */
     sub(otherArrayOrValue) {
-        //对常数或同尺寸数组进行逐位减法
         const subFunc = (x, y) => x - y;
         if (typeof otherArrayOrValue === 'number') {
             return this.vectorize(x => subFunc(x, otherArrayOrValue));
         } else if (otherArrayOrValue instanceof ImgArray) {
             return this.operateArrayOperation(otherArrayOrValue, subFunc);
         }else {
-            console.error('无效的操作数');
+            console.error('无效的操作数。');
             return null;
         }
     }
 
+    /**
+     * mul(otherArrayOrValue)，数组乘法，支持常数或数组
+     * @param {ImgArray | Number} otherArrayOrValue 
+     * @returns {ImgArray}
+     */
     mul(otherArrayOrValue) {
-        //对常数或同尺寸数组进行逐位乘法
         const mulFunc = (x, y) => x * y;
         if (typeof otherArrayOrValue === 'number') {
             return this.vectorize(x => mulFunc(x, otherArrayOrValue));
         } else if (otherArrayOrValue instanceof ImgArray) {
             return this.operateArrayOperation( otherArrayOrValue, mulFunc);
         }else {
-            console.error('无效的操作数');
+            console.error('无效的操作数。');
             return null;
         }
     }
 
+    /**
+     * div(otherArrayOrValue)，数组除法，支持常数或数组
+     * @param {ImgArray | Number} otherArrayOrValue 
+     * @returns {ImgArray}
+     */
     div(otherArrayOrValue) {
-        //对常数或同尺寸数组进行逐位除法
         const divFunc = (x, y) => x / y;
         if (typeof otherArrayOrValue === 'number' && otherArrayOrValue !== 0) {
             return this.vectorize(x => divFunc(x, otherArrayOrValue));
         } else if (otherArrayOrValue instanceof ImgArray) {
             if (otherArrayOrValue.data.some(value => value === 0)) {
-                console.error('除数不能为0');
+                console.error('除数数组中包含0元素。');
                 return null;
             }
             return this.operateArrayOperation(otherArrayOrValue, divFunc);
         } else {
-            console.error('除数不合法');
+            console.error('除数不合法。');
             return null;
         }
     }
     
+    /**
+     * clamp(vmin=0,vmax=255)，截断，将小于vmin的元素变成vmin，大于vmax的元素变成vmax
+     * @param {Number} vmin 最小值，默认为0
+     * @param {Number} vmax 最大值，默认为255
+     * @returns {ImgArray} 截断后的结果
+     */
     clamp(vmin=0,vmax=255){
-        //截断
         return this.vectorize( x => x<vmin? vmin: (x>vmax? vmax:x) );
     }
 
+    /**
+     * abs()，绝对值
+     * @returns {ImgArray} 绝对值结果
+     */
     abs(){
-        //绝对值
         return this.vectorize( x => Math.abs(x));
     }
 
+    /**
+     * square()，平方
+     * @returns {ImgArray} 平方结果
+     */
     square(){
-        //平方
         return this.vectorize( x => x*x);
     }
 
+    /**
+     * pow(value)，幂运算
+     * @param {Number} value 
+     * @returns {ImgArray}
+     */
     pow(value){
-        //幂运算
         return this.vectorize( x => Math.pow(x,value) );
     }
 
+    /**
+     * relu(value)，ReLU函数，将小于value的元素变成value，大于value的不变
+     * @param {Number} value 
+     * @returns {ImgArray}
+     */
     relu(value=0){
-        //relu函数
         return this.vectorize( x =>  x< value? value: x );
     }
 
+    /**
+     * opposite()，取反，即每个元素取负
+     * @returns {ImgArray}
+     */
+    opposite(){
+        return this.vectorize( x => -x);
+    }
+    
+    /**
+     * vectorizemath(func=Math.sin, ...params)，对Math中的函数进行运算
+     * @returns {ImgArray} 
+     */
+    vectorizemath(func=Math.sin,...params){
+        //可以看成是一个母函数，只要是调用了Math的函数，都可以用这个函数，
+        //例如：前面的pow()方法，写成vectorizemath(Math.pow,y)
+        //例如：前面的abs()方法，写成vectorizemath(Math.abs)
+        return this.vectorize(x => func(x,...params))
+    }
+
+
+    //todo:分成5个函数，分别对应不同的阈值处理方式？
     threshold(threshold=100,method='binary',maxval=255){
         if (method=='binary'){
             //二值化
@@ -509,21 +642,21 @@ class ImgArray {
             //二值化（反转）
             return this.vectorize( (x)=>{ return x> threshold? 0: maxval})
         }
-        else if (method=='truncate_inv'){
-            //截断化（反转）
-            return this.vectorize( (x)=>{ return x> threshold? x: 0})
-        }
-        else if(method=='tozero'){
+        else if (method=='tozero'){
             //归零化
             return this.vectorize( (x)=>{ return x> threshold? x: 0})
+        }
+        else if(method=='tozero_inv'){
+            //归零化（反转） 
+            return this.vectorize( (x)=>{ return x> threshold? 0: x})
         }
     }
 
     span(lower,upper,vmin=0,vmax=255){
         //区间变换
         let func= (x)=>{
-            if(x>upper) x=upper;
-            if(x<lower) x=lower;
+            if(x>=upper) return vmax;
+            if(x<=lower) return vmin;
             return (x-lower)/(upper-lower)*(vmax-vmin)+vmin;
         }
         return this.vectorize(func);
@@ -541,12 +674,12 @@ class ImgArray {
                 maxv=x ;
                 return }
         });
-        return [minv,maxv];
+        return {minv,maxv};
     }
 
     stretch(vmin=0,vmax=255){
         //拉伸到指定的数值范围内
-        let [minv,maxv]=this.globalminmax();
+        let {minv,maxv}=this.globalminmax();
         if (minv==maxv){
             return this.copy().fill( (vmin+vmax)/2 ); } 
         else{
@@ -881,7 +1014,7 @@ class ImgArray {
     lmi(sizes=[3,3]){
         //LMI特征
         let tmparr = this.neighbor(sizes,0);
-        let centerpos=Math.floor(tmparr.shape[2]/2);
+        let centerpos=Math.floor(tmparr.shape.channel/2);
         function calclmi(x){
             let tmpnew=0;
             let centvalue=x[centerpos];
@@ -967,6 +1100,62 @@ class ImgArray {
         //创建一个指定尺寸的，指定范围的均值分布的数组
         let newimgarr=new ImgArray({height,width,channel,lazy:false});
         newimgarr.data=newimgarr.data.map(x=>Math.random()*(vmax-vmin)+vmin);
+        return newimgarr;
+    }
+
+    static zeros({height=256,width=256,channel=3}={}){
+        return new ImgArray({height,width,channel,lazy:false});
+    }
+
+    static ones({height=256,width=256,channel=3}={}){
+        return new ImgArray({height,width,channel,lazy:false}).fill(1);
+    }
+
+    static full({height=256,width=256,channel=3}={},value=0){
+        return new ImgArray({height,width,channel,lazy:false}).fill(value);
+    }
+
+    static fromBuffer(arraybuffer, shape, dtype = 'float32') {
+        // arraybuffer创建ImgArray,假设buffer的排列方向是hwc，将buffer根据dtype转换为typedarray
+        // 参照random函数，检查转换后的和shape个数一致
+        let {height, width, channel} = shape;
+
+        let type = ImgArray.dtypes[dtype];
+        let bytesize = height * width * channel * type.BYTES_PER_ELEMENT;
+        // 确保转换后的数组长度与期望的shape一致
+        if (bytesize !== arraybuffer.byteLength) {
+            throw new Error('长度不匹配');
+        }
+
+        let typedArray = new type(height * width * channel);
+        
+        // 创建ImgArray实例，并将数据赋值
+        let newimgarr = new ImgArray({ height, width, channel, lazy: true });
+        // newimgarr.data = typedArray.map(x => x);
+        newimgarr.data = typedArray.slice();//创建一个幅本
+        return newimgarr;
+        }
+    
+    
+    static fromArray(arr, shape, dtype = 'float32') {
+        //从数组创建ImgArray，arr的类型typedarray或array,检查个数、长度、类型是否一致，多维array的话flatten为一维
+        if (!Array.isArray(arr) && !ArrayBuffer.isView(arr)) {
+            throw new Error('arr输入类型必须是：array or TypedArray');
+        }
+        let flatArray;
+        if (Array.isArray(arr)) {
+            // 展开数组
+            flatArray = arr.flat(Infinity);     // 当 depth 设置为 Infinity 时,会将数组的所有嵌套层级全部展开
+        } else {
+            // 转换为普通数组
+            flatArray = arr;
+        }
+        let {height, width, channel} = shape;
+        if (flatArray.length !== height * width * channel) {
+            throw new Error('长度不匹配');
+        }
+        let newimgarr = new ImgArray({ height, width, channel, lazy: true });
+        newimgarr.data = new ImgArray.dtypes[dtype](flatArray);
         return newimgarr;
     }
 
@@ -1148,6 +1337,41 @@ class ImgArray {
             console.error('array channel is not correct, channel should be 1(gray),3(RGB) or 4(RGBA)')
             console.error('数组的通道数不正确，当通道数是1（灰度）, 3（RGB彩色）, 或 4（带有透明通道的彩色图像）时才可以显示为图像！')
         }
+    }
+    
+    /**
+     * toString() 将数组转为字符显示
+     * @returns {String} 数组的字符串表示
+     */
+    toString(){
+        //对于大数组的显示存在问题，参照Numpy
+        let str=`shape: [${this.height}, ${this.width}, ${this.channel}]\ndtype: ${this.dtype}\ndata :\n[`;
+        for(let h=0; h<this.height;h++){
+            let block=h? ' [': '[';
+            for(let w=0; w<this.width;w++){
+                let line=w? '  [': '[';
+                for (let c=0; c<this.channel;c++){
+                    let v=this.getel(h,w,c);
+                    line+=v.toFixed(2)+' ';   
+                }
+                if (w<this.width-1)
+                    block+=line+']\n';
+                else
+                    block+=line+']';
+            }
+            if (h<this.height-1)
+                str+=block+']\n\n';
+            else
+                str+=block+']';
+        }
+        return str+']';
+    }
+    
+    /**
+     * 在控制台打印数组
+     */
+    print(){
+        console.log(this.toString())
     }
 }
 
@@ -1425,6 +1649,71 @@ class Img extends ImgArray{
         }
     }
     
+    /**
+     * getpixel(x,y)，获取图像的像素值
+     * @param {Int} x , 像素的x坐标，横坐标
+     * @param {Int} y , 像素的y坐标，纵坐标
+     * @returns {Uint8ClampedArray(4)} rgba，范围为0~255
+     */
+    getpixel(x,y){
+        let idx=this.idxtoelidx(y,x,0);
+        return this.data.slice(idx,idx+this.channel);
+    }
+
+    /**
+     * setpixel(x,y,rgba)，设置图像的像素值
+     * @param {Int} x 
+     * @param {Int} y 
+     * @param {Uint8ClampedArray(4) || Array(4)} rgba ,元素值的范围要为0~255
+     */
+    setpixel(x,y,rgba=[0,0,0,255]){
+        rgba=new Uint8ClampedArray(rgba);
+        if (rgba.length>4) 
+            rgba=rgba.slice(0,4);
+        let idx=this.idxtoelidx(y,x,0);
+        this.data.set(rgba,idx);
+    }
+
+    //试验性函数
+    applycolormap(){
+        //常试性的特性，将图像转灰度后，为灰度图像添加warm to cool的通过添加伪彩色warm to cool
+        //cool to warm from vtkjs colormaps.json
+        //颜色映射的计算来自于vtkjs colormaps.json中的定义
+        let colormap=new Map();
+        function calc(x){
+            x=x/255;
+            let r,g,b;
+            let wa,wb;
+            if (x<0.5){
+                wa=(0.5-x)/0.5
+                wb=x/0.5
+                r=wa*0.705882352941+wb*0.865;
+                g=wa*0.0156862745098+wb*0.865;
+                b=wa*149019607843+wb*0.865;
+            }
+            else{
+                wa=(1-x)/0.5
+                wb=(x-0.5)/0.5
+                r=wa*0.865+wb*0.23137254902;
+                g=wa*0.865+wb*0.298039215686;
+                b=wa*0.865+wb*0.752941176471;
+            }
+            return [r*255,g*255,b*255]
+        }
+        for (let i=0;i<256;i++){
+            colormap.set(i,calc(i));
+        }
+        let outimg=this.empty(false);
+        for (let y=0;y<this.height;y++){
+            for (let x=0;x<this.width;x++){
+                let [r,g,b,a]=this.getpixel(x,y);
+                [r,g,b]=colormap.get(parseInt((r+g+b)/3));
+                outimg.setpixel(x,y,[r,g,b,a]);
+            }
+        }
+        return outimg;
+    }
+
     resize(height=256,width=256){
         if (! this.iscasnew) this.update();
         let canvas = document.createElement('canvas');
@@ -1453,6 +1742,76 @@ class Img extends ImgArray{
         if ( this.iscasnew) this.update();
         this.data.forEach(function (x,idx,arr){ if (idx %4==3 ) arr[idx]=value  });
         return this;
+    }
+
+    bitplane(cidx, bitnum) {
+        //计算比特面,cidx取哪个通道，bitnum取哪个比特位，返回值是0、1的数组Imgarray对象
+        //this.dsplit或循环   this.vectorize  
+        // 推荐双层循环，对宽和高进行遍历，通过使用getelement获取通道的值
+        const bitplaneArray = new ImgArray({ height: this.height, width: this.width, channel: 1 })
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                //计算当前像素在data数组的索引
+                //let index = this.idxtoelidx(y, x, cidx);
+                //let val = this.data[index];              //获得指定通道的值
+                let val = this.getel(y,x,cidx);
+                const bitValue = (val >> bitnum) & 1;    //提取指定比特位的值
+                //bitplaneArray.data[y * this.width + x] = bitValue * 255;
+                bitplaneArray.setel(y,x,0,bitValue*255);
+            }
+        }
+        return bitplaneArray;
+    }
+
+    
+    
+    // RGB域转YCbCr域
+    RGBtoYCbCr() {
+        //将RGB图像转换为YCbCr图像
+        // 创建一个与原始图像相同大小的新图像对象
+        let ycbcrImg = new Img({ width: this.width, height: this.height, channel: this.channel });
+        if (this.channel < 3) {
+            console.error("该图像不是RGB图像，无法进行转换")
+        }
+        for (let i = 0; i < this.data.length; i += this.channel) {
+            // 获取当前像素的RGB值
+            let r = this.data[i];
+            let g = this.data[i + 1];
+            let b = this.data[i + 2];
+            // 计算YCbCr值
+            let y = 0.299 * r + 0.587 * g + 0.114 * b;
+            let Cb = (-0.168736 * r - 0.331264 * g + 0.5 * b) + 128;
+            let Cr = (0.5 * r - 0.418688 * g - 0.081312 * b) + 128;
+            ycbcrImg.data[i] = y;
+            ycbcrImg.data[i + 1] = Cb;
+            ycbcrImg.data[i + 2] = Cr;
+            ycbcrImg.data[i + 3] = this.data[i + 3];
+        }
+        // console.log(ycbcrImg);
+        return ycbcrImg;
+    }
+    
+    YCbCrtoRGB() {
+        let rgbImg = new Img({ width: this.width, height: this.height, channel: this.channel });
+        if (this.channel < 3) {
+            console.error("该图像无法转换为RGB图像")
+        }
+        for (let i = 0; i < this.data.length; i += this.channel) {
+            // 获取当前像素的RGB值
+            let y = this.data[i];
+            let Cb = this.data[i + 1];
+            let Cr = this.data[i + 2];
+            // 计算YCbCr值
+            let r = y + 1.402 * (Cr - 128);
+            let g = y - 0.344136 * (Cb - 128) - 0.714136 * (Cr - 128);
+            let b = y + 1.772 * (Cb - 128);
+            rgbImg.data[i] = r;
+            rgbImg.data[i + 1] = g;
+            rgbImg.data[i + 2] = b;
+            rgbImg.data[i + 3] = this.data[i + 3];
+        }
+        // console.log(rgbImg);
+        return rgbImg;
     }
 
     drawbox(x=50, y=50, w=50, h=50, color='#000000', linewidth=2, fill=false, fillcolor='#000000'){

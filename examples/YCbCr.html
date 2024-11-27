@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>YCbCr示例</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>YCbCr() method usage</h1>
+    <h1>YCbCr()示例</h1>
+    <!-- <canvas></canvas>
+    <canvas></canvas> -->
+    <br>
+    <script>
+        let cass = [...document.querySelectorAll('canvas')];
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]);
+            img.RGBtoYCbCr().show(cass[1]);
+            img.RGBtoYCbCr().YCbCrtoRGB().show(cass[2]);
+
+            console.log(img)
+            console.log(img.RGBtoYCbCr())
+            console.log(img.RGBtoYCbCr().YCbCrtoRGB())
+        })
+    </script>
+</body>
+
+</html>

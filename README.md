@@ -10,10 +10,10 @@ In ImageLibJS, there are two main classes: **ImgArray** and **Img**.
 
 The ImageLibJS is a one file library, so it can be easily integrated into your project.
 
-Clone this repository or download the ImageLibJS.js file directly, then  include  ImageLibJS.js in your html file:
+Clone this repository or download the ImageLibJS.js file directly, then  include  Imagelib.js in your html file:
 
 ```html
-    <script src="./ImageLibJS.js"></script>
+    <script src="./Imagelib.js"></script>
     <script>
         //create a array representing a 256*256 image, filled with 255 in channel 0
         let imgarr=new ImgArray({height:256,width:256});
@@ -96,6 +96,8 @@ Donations to support this project are welcome.
 
 
 ## History
+* tick/tock: 2024-11-27: Shuchuo Fu's work: add ImgArray static method fromBuffer(), fromArray(), and Img bitpalne(), add Img method RGBtoYCbCr(), YCbCrtoRGB(), and add many raw api examples. Other improvements on ImgArray are adding property dtypenames, methods opposite(),vectorizemath(), static methods zeros(), ones(), full(), toString(), print(), and improvements on Img are adding getpixel(), setpixel(), applycolormap().
+
 * tock: 2024-10-20: enhance fill() method, fill() method currently suport four ways to fill a ImgArray, demo is at [Demo fill()](https://yjphhw.github.io/ImageLibJS/examples/fill.html), this feature is made by Shucuo Fu. rolllud() and rolllr() methods are added, corresponding demo is at [Demo roll()](https://yjphhw.github.io/ImageLibJS/examples/roll.html). fliplr() and flipud() methods are added, rotate on ImgArray is implemented.
 * tick: 2024-9-20: add skin detection demo; add comments on some ImgArray methods; make decision to implement fliplr() , flipud() , rolllr(), rollud() methods in next month.
 * tock: 2024-8-20: deploy all repo on github pages; a major change for Img class, add a canvas to Img, Img.resize() and Img.rotate() methods are rewrited, now they are synchronys; ImgArray and Img classes are supported chainner methods, sunch as ImgArray.random().mean(true).show() ; fix bugs in some demos.

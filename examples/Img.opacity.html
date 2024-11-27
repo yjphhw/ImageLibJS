@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>create ImgArray</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>Img.opacity</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        opacity(value=255)
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        set Img's opacity.
+    </p>
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>value: set Img's opacity, value should be in [0,255]. 255 is the default value.
+            255 represent full opacity, 0 represent no opacity. 
+        </li>
+    </ul>
+
+    <h2>Demons</h2>
+
+    <!--A Demo-->
+    <h3>Demo1</h3>
+    <p>create a ImgArray and show it as matrix.</p>
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+    <h4>Result</h4>
+    <div id="demo1result">
+    </div>
+
+    <script id="demo1code">
+        //completely opaque
+        let img=new Img().fill(255,[0,3]).show();
+        
+        //semi-opaque
+        img.opacity(127).show();
+        
+        //almost transparent
+        img.opacity(10).show();
+    </script>
+
+    <script>
+        var result = document.getElementById("demo1result");
+        var code = document.getElementById("demo1code");
+        var demo1 = document.getElementById("demo1");
+        demo1.innerText = code.innerText;
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>max示例</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>max() method usage</h1>
+    <h1>max()示例</h1>
+    <!-- <canvas></canvas>
+    <canvas></canvas>
+    <canvas></canvas> -->
+    <br>
+    <script>
+        let cass = [...document.querySelectorAll('canvas')];
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]);
+            let imgar = img.toarray()
+            imgar.max(ischannel = true).show(cass[1]);
+        })
+    </script>
+</body>
+
+</html>
