@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>fromArray示例</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>fromArray示例() method usage</h1>
+    <h1>fromArray示例()示例</h1>
+    <br>
+    <script>
+        let imageArray = [
+            // 这里的数组应代表一个 2x2 的 RGB 图像  
+            [[255, 0, 0], [0, 255, 0]],
+            [[0, 0, 255], [255, 255, 0]]
+        ];
+        let shape = {height:2, width:2, channel:3}; // 高度 2，宽度 2，通道 3 (RGB)  
+        let imgArray = ImgArray.fromArray(imageArray, shape);
+        console.log(imgArray);
+        imgArray.print();
+
+        let imageArray2 = [255, 0, 0, 123, 0, 45, 66, 33, 88];
+        let shape2 = {channel:1, height:3, width:3};
+        let imgArray2 = ImgArray.fromArray(imageArray2, shape2);
+        console.log(imgArray2);
+        imgArray2.print();
+
+        let uint8TypedArray = new Uint8Array(6);
+        uint8TypedArray[0] = 25;
+        uint8TypedArray[1] = 50;
+        uint8TypedArray[2] = 75;
+        uint8TypedArray[3] = 100;
+        uint8TypedArray[4] = 125;
+        uint8TypedArray[5] = 255;
+        let shape3 = {channel:1, width:2, height:3};
+        let uint8Typed = ImgArray.fromArray(uint8TypedArray, shape3);
+        console.log(uint8Typed);
+        uint8Typed.print();
+    </script>
+</body>
+
+</html>

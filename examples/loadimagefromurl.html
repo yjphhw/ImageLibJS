@@ -10,9 +10,11 @@
         <p>从URL中加载图像。</p>
         
         <script>
+            var image=null;
             Img.fromurl('../images/dog.png').then(img=>{
                 img.show();
                 console.log(img);
+                image=img;
             })
         </script>
     </body>

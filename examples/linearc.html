@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>linearc示例</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>linearc() method usage</h1>
+    <h1>linearc()示例</h1>
+    <!-- <canvas></canvas>
+    <canvas></canvas> -->
+    <br>
+    <script>
+        let cass = [...document.querySelectorAll('canvas')];
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]);
+            img.toarray().div(255*3).linearc(weights = [1, 2, 3], bais = 0).show({cas:cass[1],vmax:1});
+            img.linearc(weights = [0.1, 0.2, 0.3], bais = 0).show(cass[2]);
+            // console.log(img.linearc(weights = [0.1, 0.2, 0.3], bais = 0))
+        })
+    </script>
+</body>
+
+</html>
