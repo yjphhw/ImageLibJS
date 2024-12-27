@@ -96,6 +96,10 @@ Donations to support this project are welcome.
 
 
 ## History
+* tock: 2024-12-27: repeat() and grid()method() are added, and add a DICM format parser which is 
+  implemented by raw JavaScript,to support DICOM image.
+  The DICOM image can be loaded and convert to ImgArray object. The demos and useage can be seen in examples folder.
+
 * tick/tock: 2024-11-27: Shuchuo Fu's work: add ImgArray static method fromBuffer(), fromArray(), and Img bitpalne(), add Img method RGBtoYCbCr(), YCbCrtoRGB(), and add many raw api examples. Other improvements on ImgArray are adding property dtypenames, methods opposite(),vectorizemath(), static methods zeros(), ones(), full(), toString(), print(), and improvements on Img are adding getpixel(), setpixel(), applycolormap().
 
 * tock: 2024-10-20: enhance fill() method, fill() method currently suport four ways to fill a ImgArray, demo is at [Demo fill()](https://yjphhw.github.io/ImageLibJS/examples/fill.html), this feature is made by Shucuo Fu. rolllud() and rolllr() methods are added, corresponding demo is at [Demo roll()](https://yjphhw.github.io/ImageLibJS/examples/roll.html). fliplr() and flipud() methods are added, rotate on ImgArray is implemented.
