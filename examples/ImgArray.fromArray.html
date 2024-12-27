@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>make arrays to grid</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>ImgArray.fromArray()</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        fromArray(arr, shape, dtype = 'float32') {
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        a ImgArray static method to generate a ImgArray object 
+        from a array like object, such as Array or TypedArray.
+    </p>
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>arr: an array like objects.,such as Array or TypedArray.
+        </li>
+        <li>shape: an object represent the shape of array to generate, such as {width:4,height:4,channel:1}.
+        </li>
+        <li>dtype: elementtype of array, default is 'flaot32', all dtype possible values in ImgArray.dtypenames.
+        </li>
+    </ul>
+
+    <h2>Demons</h2>
+
+    <!--A Demo-->
+    <h3>Demo1</h3>
+    <p>show result as array.</p>
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+    <h4>Result</h4>
+    <div id="demo1result">
+    </div>
+
+    <script id="demo1code">
+        let array = Array.of(3,4,5,6); // 假设这是一个 2x2x1 的 数组 ，float32 类型  
+        let shape = {width:2,height:2,channel:1};
+        var arr = ImgArray.fromArray(array, shape,'float32');
+    </script>
+
+    <script>
+        var result = document.getElementById("demo1result");
+        var code = document.getElementById("demo1code");
+        var demo1 = document.getElementById("demo1");
+        demo1.innerText = code.innerText;
+        result.innerText = arr.toString();
+    </script>
+
+    <h3>Demo2</h3>
+    <p>show result as image.</p>
+    <h4>Code</h4>
+    <pre id="demo2"></pre>
+    <h4>Result</h4>
+    <canvas id="demo2result"></canvas>
+
+    <script id="demo2code">
+        //simple example to show ct from dicom image 
+        fetch('../images/ct.dcm').then(b=>b.arrayBuffer()).then(bf=>{
+            shape = {width:512,height:512,channel:1};
+            stpos=bf.byteLength-512*512*2
+            //a rough way to make a Int16Array
+            arr=new Int16Array(bf.slice(stpos))
+            arr=ImgArray.fromArray(arr,shape,'int16');
+            arr.show({cas:result2,vmin:-600,vmax:1000});
+        });
+
+
+    </script>
+    <script>
+        var demo2 = document.getElementById('demo2');
+        var result2 = document.getElementById('demo2result');
+        var code2 = document.getElementById('demo2code');
+        demo2.innerText = code2.innerText;
+        arr.show({ cas: result2 });
+    </script>
+</body>
+
+</html>

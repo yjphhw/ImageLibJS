@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>make arrays to grid</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>DICM</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        static async fromurl(url) 
+
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        a class to parse the DICM image file,
+        the DICM format is a medical image format
+        used in CT and MR.
+    </p>
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>url: the url of dicom image file.
+        </li>
+    </ul>
+
+    <h2>Demons</h2>
+
+    <h3>Demo1</h3>
+    <p>show result as image.</p>
+    <h4>Code</h4>
+    <pre id="demo2"></pre>
+    <h4>Result</h4>
+    <canvas id="demo2result"></canvas>
+
+    <script id="demo2code">
+        //simple example to show ct from dicom image 
+        DICM.fromurl('../images/ct.dcm').then(dicm=>{
+            //convert dicom to ImgArray
+            let arr=dicm.toImgArray();
+            arr.show({cas:result2,vmin:-1200,vmax:0});
+        });
+
+    </script>
+    <script>
+        var demo2 = document.getElementById('demo2');
+        var result2 = document.getElementById('demo2result');
+        var code2 = document.getElementById('demo2code');
+        demo2.innerText = code2.innerText;
+        arr.show({ cas: result2 });
+    </script>
+</body>
+
+</html>

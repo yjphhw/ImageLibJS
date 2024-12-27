@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>make arrays to grid</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>ImgArray.repeat</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        repeat(row,col)
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        make this array repeat row*col times to make a grid.
+    </p>
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>row: set repeat num in row(height direction).
+        </li>
+        <li>col: set repeat num in col(height direction).
+        </li>
+    </ul>
+
+    <h2>Demons</h2>
+
+    <!--A Demo-->
+    <h3>Demo1</h3>
+    <p>show result as array.</p>
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+    <h4>Result</h4>
+    <div id="demo1result">
+    </div>
+
+    <script id="demo1code">
+        let arr=new ImgArray({width:2,height:3,channel:1}).fill(100,0);
+        var gridarray=arr.repeat(2,2);
+    </script>
+
+    <script>
+        var result = document.getElementById("demo1result");
+        var code = document.getElementById("demo1code");
+        var demo1 = document.getElementById("demo1");
+        demo1.innerText = code.innerText;
+        result.innerText = gridarray.toString();
+    </script>
+
+    <h3>Demo2</h3>
+    <p>show result as image.</p>
+    <h4>Code</h4>
+    <pre id="demo2"></pre>
+    <h4>Result</h4>
+    <canvas id="demo2result"></canvas>
+
+    <script id="demo2code">
+        var resimg=null;
+        Img.fromurl("../images/smalldog.png").then(img=>{
+            resimg=img.repeat(3,3);
+        })
+
+    </script>
+    <script>
+        var demo2 = document.getElementById('demo2');
+        var result2 = document.getElementById('demo2result');
+        var code2 = document.getElementById('demo2code');
+        demo2.innerText = code2.innerText;
+        function show(){
+            if(resimg==null) 
+            {   setTimeout(show,200);
+                return;
+            }
+            resimg.show({ cas: result2 });
+        }
+        show();
+    </script>
+</body>
+
+</html>
