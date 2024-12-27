@@ -16,6 +16,9 @@ class ImgArray {
         int32:Int32Array,
         uint32:Uint32Array,
         cuint8:Uint8ClampedArray,
+        int16:Int16Array,
+        int8:Int8Array,
+        float64:Float64Array,
     };
     
     /**
@@ -336,14 +339,14 @@ class ImgArray {
     }
 
     /**
-     * vstack(...imgars)，垂直堆叠数组
-     * @param  {...ImgArray} imgars 
+     * vstack(...imgarrs)，垂直堆叠数组
+     * @param  {...ImgArray} imgarrs 
      * @returns {ImgArray} 垂直堆叠后的结果
      */
-    vstack(...imgars){
+    vstack(...imgarrs){
         //沿高度方向叠加
         //需要数组的宽和通道数一置，但是该函数不进行检测，由用户来保证
-        let tmpimgarrs=[this,...imgars];
+        let tmpimgarrs=[this,...imgarrs];
         let newheight=0;
         for (let imgidx=0;imgidx<tmpimgarrs.length;imgidx++){
             newheight+=tmpimgarrs[imgidx].height;
@@ -357,7 +360,59 @@ class ImgArray {
         return newarray;
     }
     
-    
+    /**
+     * grid(row,col,...imgarrs)，将多个尺寸相同的数组堆叠成网格
+     * @param {Int} row 行数
+     * @param {Int} col 列数
+     * @param  {...ImgArray} imgarrs 
+     * @returns {ImgArray} 网格堆叠后的结果
+     */ 
+    grid(row,col,...imgarrs){
+        //将多个数组堆叠成网格，以方便观察
+        //参数为ImgArray实例，且必须为相同尺寸
+        let tmpimgarrs=[this,...imgarrs];
+        if (row*col<2 && tmpimgarrs.length!=row*col ){
+            console.error(`错误：参数错误，row=${row},col=${col},imgarrs.length=${imgarrs.length}`);
+            return ;
+        }
+        let outarr=new ImgArray({height:row*this.height,width:col*this.width,channel:this.channel});
+        for (let hidx=0;hidx<outarr.height;hidx++){
+            for (let widx=0;widx<outarr.width;widx++){
+                for (let cidx=0;cidx<this.channel;cidx++){
+                    const imghidx = Math.floor(hidx / this.height); 
+                    const imgwidx = Math.floor(widx / this.width); 
+                    const imgidx = imghidx * col + imgwidx;
+                    let tmpv=tmpimgarrs[imgidx].getel(hidx%this.height,widx%this.width,cidx);
+                    outarr.setel(hidx,widx,cidx,tmpv);
+                }
+            }
+        }
+        return outarr;
+    }
+
+    /** 
+    * repeat(row, col)，在水平和竖直方向重复数组
+    * @param  {row} 在高度方向上重复的次数，也就是在行方向上重复的次数
+    * @param  {col} 在宽度方向上重复的次数，也就是在列方向上重复的次数
+    * @returns {ImgArray} 重复后的结果
+    */
+    repeat(row,col){
+        if (row*col<2){
+            console.error(`错误：repeat参数错误，row=${row},col=${col}`);
+            return ;
+        }
+        let outarr=new ImgArray({height:row*this.height,width:col*this.width,channel:this.channel});
+        for (let hidx=0;hidx<outarr.height;hidx++){
+            for (let widx=0;widx<outarr.width;widx++){
+                for (let cidx=0;cidx<this.channel;cidx++){
+                    let tmpv=this.getel(hidx%this.height,widx%this.width,cidx);
+                    outarr.setel(hidx,widx,cidx,tmpv);
+                }
+            }
+        }
+        return outarr;
+    }
+
     /**
      * filiplr(),在宽度轴上，进行左右翻转
      * @returns {ImgArray}
@@ -1121,21 +1176,28 @@ class ImgArray {
         let {height, width, channel} = shape;
 
         let type = ImgArray.dtypes[dtype];
+        if (type == undefined) {
+            throw new Error(`dtype ${dtype} is not supported, supported dtypes are ${ImgArray.dtypenames}`);
+        }
         let bytesize = height * width * channel * type.BYTES_PER_ELEMENT;
         // 确保转换后的数组长度与期望的shape一致
         if (bytesize !== arraybuffer.byteLength) {
             throw new Error('长度不匹配');
         }
-
-        let typedArray = new type(height * width * channel);
-        
+        let typedArray = new type(arraybuffer.slice()); //对arraybuffer拷贝
         // 创建ImgArray实例，并将数据赋值
         let newimgarr = new ImgArray({ height, width, channel, lazy: true });
-        // newimgarr.data = typedArray.map(x => x);
-        newimgarr.data = typedArray.slice();//创建一个幅本
+        newimgarr.data = typedArray;
         return newimgarr;
         }
-    
+
+    get buffer(){
+        return this.data.buffer;
+    }
+
+    get typedarray() {
+        return this.data;
+    }
     
     static fromArray(arr, shape, dtype = 'float32') {
         //从数组创建ImgArray，arr的类型typedarray或array,检查个数、长度、类型是否一致，多维array的话flatten为一维
@@ -1862,6 +1924,337 @@ class Img extends ImgArray{
 }
 
 
+class DICM {
+    //a simple DICOM format parser
+    //一个简单的DICM格式解析器，读取的数组可转为ImgArray数组
+    //参考资料：
+    //https://www.cnblogs.com/assassinx/archive/2013/01/09/dicomViewer.html
+    //https://www.cnblogs.com/sean-zeng/p/18061402
+    //dicom 文件可分为5个部分：
+    //1. 前128个字节为导言区，全都是0；
+    //2. 128-132字节，共4个字节为“DICM”字符串，用于识别检测DICM格式。
+    //3. 文件元数据区， 从132字节开始，使用显示的VR格式记录， 格式有两种形式：
+        //当VR值为OB OW OF UT SQ UN这几种时，格式为：组号（2），元素号（2），vr(2),预留（2），值长度（4），值 ；
+        //当VR值为其他类型时，格式为：组号（2），元素号（2），vr(2),值长度（4），值；
+    //4. 数据元数据区，可以使用显示VR或隐式VR，VR为显式时，数据元数据区为：
+        //VR为隐匿时，数据元数据区为：
+        //组号（2），元素号（2），值长度（4），值；
+        //不包含VR项，VR项需要根据组号和元素号确定；
+    //5. 数据区域
+    constructor(bf) {
+        this.bf = bf;
+        this.bytearr = new Uint8Array(bf)
+        //识别DICM格式
+        this.offset = this.#checkformat(); //the offset should be 132
+
+        //3.解析文件元数据
+        [this.islitteendian, this.isexplicitvr] = [true, true];
+        this.filemeta = this.#parseheadmeta();
+        //4.解析数据元数据
+        this.datameta = this.#parsedatameta();
+    }
+
+    #checkformat() {
+        //1. 前128个字节为导言区，全都是0；需要跳过
+        //2. 128-132字节，共4个字节为“DICM”字符串，用于识别检测DICM格式。
+        let offset = 128;
+        let formatstr = String.fromCharCode(...this.bytearr.slice(offset, offset += 4))
+        if (formatstr != 'DICM') throw ("it's not dicm image");
+        return offset;
+    }
+
+    #getheaderonetag(islitteendian = true) {
+        //3. 文件元数据区， 从132字节开始，使用显示的VR格式记录， 格式有两种形式：
+        let offset = this.offset
+        let arr = this.bytearr;
+        //当VR值为OB OW OF UT SQ UN这几种时，格式为：组号（2），元素号（2），vr(2),预留（2），值长度（4），值 ；
+        //当VR值为其他类型时，格式为：组号（2），元素号（2），vr(2),值长度（2），值；
+
+        let attrcode = arr.slice(offset, offset += 4);
+        attrcode = Array.from(attrcode).map(byte => byte.toString(16).padStart(2, '0'));
+        attrcode = attrcode[1] + attrcode[0] + "," + attrcode[3] + attrcode[2];
+
+        let vr = String.fromCharCode(...arr.slice(offset, offset += 2));
+        let datalength = 0;
+        if (['OB', 'OW', 'OF', 'UT', 'SQ', 'UN'].includes(vr)) {
+            offset += 2;
+            datalength = new DataView(arr.buffer.slice(offset, offset += 4)).getUint32(0, islitteendian);
+        }
+        else {
+            datalength = new DataView(arr.buffer.slice(offset, offset += 2)).getUint16(0, islitteendian);
+        }
+        let data = arr.slice(offset, offset += datalength);
+        let value = this.vrparse(vr, data, islitteendian);
+        this.offset = offset;
+        return { attrcode, vr, datalength, data, value }
+    }
+
+    #parseheadmeta() {
+        //    3. 文件元数据区， 从132字节开始，使用显示的VR格式记录， 格式有两种形式：
+        let firsthead = this.#getheaderonetag();
+        let headendpos = 0;
+        //第一个数据块给出整个文件元数据区的长度，不包含该firsthead的长度
+        if (firsthead.attrcode == '0002,0000')   //其值记录了整个文件元数据的长度)
+        {
+            headendpos = this.offset + firsthead.value;
+        }
+        else throw new Error('file head error');
+        let headmeta = new Map([[firsthead.attrcode, firsthead]]);
+        while (this.offset < headendpos) {
+            let metadata = this.#getheaderonetag();
+            if (metadata.attrcode == '0002,0010') {
+                [this.islitteendian, this.isexplicitvr] = this.#getdatametamode(metadata.attrcode, metadata.value);
+            }
+            headmeta.set(metadata.attrcode,metadata);
+        }
+        return headmeta;
+    }
+
+    #getdatametamode(attrcode, value) {
+        //获取数据元数据的模式，有两种显示的或隐式的，以及数值的大小端
+        if (attrcode != "0002,0010") {
+            return [null, null];
+        }
+        let isLitteEndian = null;
+        let isExplicitVR = null;
+        switch (value) {
+            case "1.2.840.10008.1.2.1\x00"://显示little
+                isLitteEndian = true;
+                isExplicitVR = true;
+                break;
+            case "1.2.840.10008.1.2.2\x00"://显示big
+                isLitteEndian = false;
+                isExplicitVR = true;
+                break;
+            case "1.2.840.10008.1.2\x00"://隐式little
+                isLitteEndian = true;
+                isExplicitVR = false;
+                break;
+            default:
+                break;
+        }
+        return [isLitteEndian, isExplicitVR]
+    }
+
+
+
+    #parsedatameta() {
+        let datameta=new Map();
+        while (this.offset< this.bytearr.length){
+            let metadata=null;
+            if (this.isexplicitvr) {
+                metadata=this.#getheaderonetag(this.islitteendian);
+            }
+            else{
+                metadata=this.#getoneimplicitmetadata(this.islitteendian);
+            }
+            datameta.set(metadata.attrcode,metadata);
+        }
+        return datameta;
+    }
+
+    #getoneimplicitmetadata() {
+        let arr=this.bytearr;
+        let offset=this.offset;
+        let attrcode = arr.slice(offset, offset += 4);
+        attrcode = Array.from(attrcode).map(byte => byte.toString(16).padStart(2, '0'));
+        attrcode = attrcode[1] + attrcode[0] + "," + attrcode[3] + attrcode[2];
+        let vr = 'UI';
+        let datalength = new DataView(arr.buffer.slice(offset, offset += 4)).getInt32(0, true);
+        let data = arr.slice(offset, offset += datalength);
+        vr = this.attricodetovr(attrcode);
+        let value = this.vrparse(vr, data,this.islitteendian);
+        this.offset=offset;
+        return { attrcode, vr, datalength, data, value }
+    }
+
+
+    static async fromurl(url) {
+        let bf = await (await fetch(url)).arrayBuffer();
+        return new DICM(bf);
+    }
+
+
+    vrparse(vr, arr, islitteendian) {
+        switch (vr) {
+            case 'CS':
+            case 'SH': //short string 
+            case 'LO':
+            case 'ST':
+            case 'LT':
+            case 'UT':
+            case 'AE': //application entity
+            case 'PN': //person name 
+            case 'UI': //Unique Identifier
+            case 'DA':
+            case 'TM':
+            case 'DT':
+            case 'AS':
+            case 'IS':
+            case 'DS':
+            case 'OW':
+            case 'OF':
+                return new TextDecoder().decode(arr);
+            case 'UL': //unsigned long
+                return new DataView(arr.buffer).getUint32(0, islitteendian);
+            case 'SS': //signed short 
+                return new DataView(arr.buffer).getInt16(0, islitteendian);
+            case 'US': //unsigned short
+            case 'AT': //attribute tag
+                return new DataView(arr.buffer).getUint16(0, islitteendian);
+            case 'SL': //signed long
+                return new DataView(arr.buffer).getInt32(0, islitteendian);
+            case 'FL': //float
+                return new DataView(arr.buffer).getFloat32(0, islitteendian);
+            case 'FD': //double
+                return new DataView(arr.buffer).getFloat64(0, islitteendian);
+            case 'OB':
+            case 'UN':
+                break;
+        }
+        return 'unknow';
+    }
+
+    attricodetovr(attrcode) {
+        switch (attrcode) {
+            case "0002,0000"://文件元信息长度
+                return "UL";
+                break;
+            case "0002,0010"://传输语法
+                return "UI";
+                break;
+            case "0002,0013"://文件生成程序的标题
+                return "SH";
+                break;
+            case "0008,0005"://文本编码
+                return "CS";
+                break;
+            case "0008,0008":
+                return "CS";
+                break;
+            case "0008,1032"://成像时间
+                return "SQ";
+                break;
+            case "0008,1111":
+                return "SQ";
+                break;
+            case "0008,0020"://检查日期
+                return "DA";
+                break;
+            case "0008,0060"://成像仪器
+                return "CS";
+                break;
+            case "0008,0070"://成像仪厂商
+                return "LO";
+                break;
+            case "0008,0080":
+                return "LO";
+                break;
+            case "0010,0010"://病人姓名
+                return "PN";
+                break;
+            case "0010,0020"://病人id
+                return "LO";
+                break;
+            case "0010,0030"://病人生日
+                return "DA";
+                break;
+            case "0018,0060"://电压
+                return "DS";
+                break;
+            case "0018,1030"://协议名
+                return "LO";
+                break;
+            case "0018,1151":
+                return "IS";
+                break;
+            case "0020,0010"://检查ID
+                return "SH";
+                break;
+            case "0020,0011"://序列
+                return "IS";
+                break;
+            case "0020,0012"://成像编号
+                return "IS";
+                break;
+            case "0020,0013"://影像编号
+                return "IS";
+                break;
+            case "0028,0002"://像素采样1为灰度3为彩色
+                return "US";
+                break;
+            case "0028,0004"://图像模式MONOCHROME2为灰度
+                return "CS";
+                break;
+            case "0028,0010"://row高
+                return "US";
+                break;
+            case "0028,0011"://col宽
+                return "US";
+                break;
+            case "0028,0100"://单个采样数据长度
+                return "US";
+                break;
+            case "0028,0101"://实际长度
+                return "US";
+                break;
+            case "0028,0102"://采样最大值
+                return "US";
+                break;
+            case "0028,1050"://窗位
+                return "DS";
+                break;
+            case "0028,1051"://窗宽
+                return "DS";
+                break;
+            //https://blog.csdn.net/m0_37477175/article/details/103803321
+            case "0028,1052": //Rescale Intercept
+                return "DS";
+                break;
+            case "0028,1053": //Rescale Slope
+                return "DS";
+                break;
+            case "0040,0008"://文件夹标签
+                return "SQ";
+                break;
+            case "0040,0260"://文件夹标签
+                return "SQ";
+                break;
+            case "0040,0275"://文件夹标签
+                return "SQ";
+                break;
+            case '7fe0,0000': //像素长度
+                return "UL";
+                break;
+            case "7fe0,0010"://像素数据开始处
+                return "OB";
+                break;
+            default:
+                return "UI";
+                break;
+        }
+    }
+
+    getdata(){
+        let b=this.datameta.get("0028,1052").value; //Rescale Intercept
+        let a=this.datameta.get("0028,1053").value;//Rescale Slope
+        let v=new Int16Array(this.datameta.get("7fe0,0010").data.buffer);
+        a=parseInt(a);
+        b=parseInt(b);
+        v=v.map(x=>x*a+b); //change to HU;
+        let height=this.datameta.get("0028,0010").value; //image height;
+        let width=this.datameta.get("0028,0011").value;
+        return {height,width,channel:1, array:v,unit:'HU'}
+    }
+    toImgArray(){
+        let v=this.getdata();
+        return ImgArray.fromArray(v.array,v);
+    }
+}
+
+
+
+
 function delay(n) {
     //异步的延时单位是ms
     return new Promise(function(resolve) {
@@ -1870,4 +2263,4 @@ function delay(n) {
 }
 
 //当将该文件用于ES6 Module时，取消以下注释，导出Img和ImgArray类
-//export {Img, ImgArray} ;
+//export {Img, ImgArray,DICM} ;
