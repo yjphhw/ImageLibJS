@@ -79,6 +79,21 @@ python -m http.server
 2. Open the URL displayed in the terminal (like: http://localhost:8000/) in the browser, and you will see the demo.html file.
 
 
+## Documentation
+
+Thanks to JSDocs， we are glad to announce that the documenataion of ImageLibJS is made. It will mean the ImageLibJS will be more easier to use.
+
+The following are docs:
+
+1. [All Doc index page](https://yjphhw.github.io/ImageLibJS/docs/index.html)
+
+2. [ImgArray Class Doc](https://yjphhw.github.io/ImageLibJS/docs/ImgArray.html)
+
+3. [Img Class Doc](https://yjphhw.github.io/ImageLibJS/docs/Img.html)
+
+4. [DICM Class Doc](https://yjphhw.github.io/ImageLibJS/docs/DICM.html)
+
+
 ## Plans
 
 Due to personal time constraints, the ImageLibJS will follow a tick-tock update pattern, with one month designated as "tick" and the following month as "tock". 
@@ -96,6 +111,7 @@ Donations to support this project are welcome.
 
 
 ## History
+* tick: 2024-1-19: write the doc of ImageLibJS, mainly by Shuchuo Fu. 
 * tock: 2024-12-27: repeat() and grid()method() are added, and add a DICM format parser which is 
   implemented by raw JavaScript,to support DICOM image.
   The DICOM image can be loaded and convert to ImgArray object. The demos and useage can be seen in examples folder.
