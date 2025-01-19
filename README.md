@@ -111,7 +111,7 @@ Donations to support this project are welcome.
 
 
 ## History
-* tick: 2024-1-19: write the doc of ImageLibJS, mainly by Shuchuo Fu. 
+* tick: 2025-1-19: write the doc of ImageLibJS, mainly by Shuchuo Fu. 
 * tock: 2024-12-27: repeat() and grid()method() are added, and add a DICM format parser which is 
   implemented by raw JavaScript,to support DICOM image.
   The DICOM image can be loaded and convert to ImgArray object. The demos and useage can be seen in examples folder.
