@@ -1,4 +1,32 @@
-//ImageLibJS是一个基于ES6面向WEB的以图像处理为核心的数组运算库。
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Imagelib.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Imagelib.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//ImageLibJS是一个基于ES6面向WEB的以图像处理为核心的数组运算库。
 
 /**
  * @class ImgArray更重要的是数组，提供数组的计算，但是数组的运算支持上偏向于图像处理,
@@ -131,7 +159,7 @@ class ImgArray {
      *  - cidx: 通道索引，表示数组的第2维索引。
      */
     elidxtoidx(elidx = 0) {
-        if (elidx < 0 || elidx > this.numel - 1) return;
+        if (elidx &lt; 0 || elidx > this.numel - 1) return;
         let hwidth = this.width * this.channel;
         let hidx = parseInt(elidx / hwidth);
         elidx = elidx % hwidth;
@@ -161,9 +189,9 @@ class ImgArray {
      * @return {boolean} - true表示索引合法，false表示索引不合法
      */
     checkisvalid(hidx, widx, cidx) {
-        if (hidx + 1 > this.height || hidx < 0) return false;
-        if (widx + 1 > this.width || widx < 0) return false;
-        if (cidx + 1 > this.channel || cidx < 0) return false;
+        if (hidx + 1 > this.height || hidx &lt; 0) return false;
+        if (widx + 1 > this.width || widx &lt; 0) return false;
+        if (cidx + 1 > this.channel || cidx &lt; 0) return false;
         return true;
     }
 
@@ -257,8 +285,8 @@ class ImgArray {
      */
     issameshape(bimgarr) {
         //判断两数组形状是否相同
-        return this.height === bimgarr.height &&
-            this.width === bimgarr.width &&
+        return this.height === bimgarr.height &amp;&amp;
+            this.width === bimgarr.width &amp;&amp;
             this.channel === bimgarr.channel;
     }
 
@@ -268,7 +296,7 @@ class ImgArray {
      * @returns {Boolean} 两数组宽高是否相同
      */
     issamehw(bimgarr) {
-        return this.height === bimgarr.height && this.width === bimgarr.width;
+        return this.height === bimgarr.height &amp;&amp; this.width === bimgarr.width;
     }
 
     /**
@@ -291,22 +319,22 @@ class ImgArray {
         let tmpimgarrs = [this, ...imgars];
         let channelnum = 0;
         let channelmapping = [];
-        for (let imgidx = 0; imgidx < tmpimgarrs.length; imgidx++) {
+        for (let imgidx = 0; imgidx &lt; tmpimgarrs.length; imgidx++) {
             if (!this.issamehw(tmpimgarrs[imgidx])) {
                 console.error(`错误：第${imgidx}个堆叠数组的宽高尺寸不一致`);
                 return;
             }
             let tmpchannel = tmpimgarrs[imgidx].channel;
             channelnum += tmpchannel;
-            for (let cidx = 0; cidx < tmpchannel; cidx++) {
+            for (let cidx = 0; cidx &lt; tmpchannel; cidx++) {
                 channelmapping.push([imgidx, cidx]);
             }
         }
         let newimgarr = new ImgArray({ height: this.height, width: this.width, channel: channelnum })
 
-        for (let hidx = 0; hidx < newimgarr.height; hidx++) {
-            for (let widx = 0; widx < newimgarr.width; widx++) {
-                for (let cidx = 0; cidx < newimgarr.channel; cidx++) {
+        for (let hidx = 0; hidx &lt; newimgarr.height; hidx++) {
+            for (let widx = 0; widx &lt; newimgarr.width; widx++) {
+                for (let cidx = 0; cidx &lt; newimgarr.channel; cidx++) {
                     let [imgidx, ocidx] = channelmapping[cidx];
                     let tmpv = tmpimgarrs[imgidx].getel(hidx, widx, ocidx);
                     newimgarr.setel(hidx, widx, cidx, tmpv)
@@ -329,8 +357,8 @@ class ImgArray {
         if (channels.length == 0) channels = [...new Array(this.channel).keys()]
         for (let i of channels) {
             let tmp = new ImgArray({ height: this.height, width: this.width, channel: 1 });
-            for (let hidx = 0; hidx < this.height; hidx++) {
-                for (let widx = 0; widx < this.width; widx++) {
+            for (let hidx = 0; hidx &lt; this.height; hidx++) {
+                for (let widx = 0; widx &lt; this.width; widx++) {
                     let value = this.getel(hidx, widx, i);
                     tmp.setel(hidx, widx, 0, value);
                 }
@@ -350,18 +378,18 @@ class ImgArray {
         let tmpimgarrs = [this, ...imgars];
         let newwidth = 0;
         let widths = [];
-        for (let imgidx = 0; imgidx < tmpimgarrs.length; imgidx++) {
+        for (let imgidx = 0; imgidx &lt; tmpimgarrs.length; imgidx++) {
             let tmpwidth = tmpimgarrs[imgidx].width;
             newwidth += tmpwidth;
             widths.push(newwidth);
         }
         let newimgarr = new ImgArray({ height: this.height, width: newwidth, channel: this.channel })
 
-        for (let hidx = 0; hidx < newimgarr.height; hidx++) {
-            for (let widx = 0; widx < newimgarr.width; widx++) {
-                let imgidx = widths.map(x => widx < x).indexOf(true);
+        for (let hidx = 0; hidx &lt; newimgarr.height; hidx++) {
+            for (let widx = 0; widx &lt; newimgarr.width; widx++) {
+                let imgidx = widths.map(x => widx &lt; x).indexOf(true);
                 let owidx = imgidx > 0 ? widx - widths[imgidx - 1] : widx;
-                for (let cidx = 0; cidx < newimgarr.channel; cidx++) {
+                for (let cidx = 0; cidx &lt; newimgarr.channel; cidx++) {
                     newimgarr.setel(hidx, widx, cidx, tmpimgarrs[imgidx].getel(hidx, owidx, cidx));
                 }
             }
@@ -378,12 +406,12 @@ class ImgArray {
         //需要数组的宽和通道数一置，但是该函数不进行检测，由用户来保证
         let tmpimgarrs = [this, ...imgarrs];
         let newheight = 0;
-        for (let imgidx = 0; imgidx < tmpimgarrs.length; imgidx++) {
+        for (let imgidx = 0; imgidx &lt; tmpimgarrs.length; imgidx++) {
             newheight += tmpimgarrs[imgidx].height;
         }
         let newarray = new ImgArray({ height: newheight, width: this.width, channel: this.channel });
         let offsetidx = 0;
-        for (let imgidx = 0; imgidx < tmpimgarrs.length; imgidx++) {
+        for (let imgidx = 0; imgidx &lt; tmpimgarrs.length; imgidx++) {
             newarray.data.set(tmpimgarrs[imgidx].data, offsetidx);
             offsetidx += tmpimgarrs[imgidx].numel;
         }
@@ -400,14 +428,14 @@ class ImgArray {
     grid(row, col, ...imgarrs) {
         //参数为ImgArray实例，且必须为相同尺寸
         let tmpimgarrs = [this, ...imgarrs];
-        if (row * col < 2 && tmpimgarrs.length != row * col) {
+        if (row * col &lt; 2 &amp;&amp; tmpimgarrs.length != row * col) {
             console.error(`错误：参数错误，row=${row},col=${col},imgarrs.length=${imgarrs.length}`);
             return;
         }
         let outarr = new ImgArray({ height: row * this.height, width: col * this.width, channel: this.channel });
-        for (let hidx = 0; hidx < outarr.height; hidx++) {
-            for (let widx = 0; widx < outarr.width; widx++) {
-                for (let cidx = 0; cidx < this.channel; cidx++) {
+        for (let hidx = 0; hidx &lt; outarr.height; hidx++) {
+            for (let widx = 0; widx &lt; outarr.width; widx++) {
+                for (let cidx = 0; cidx &lt; this.channel; cidx++) {
                     const imghidx = Math.floor(hidx / this.height);
                     const imgwidx = Math.floor(widx / this.width);
                     const imgidx = imghidx * col + imgwidx;
@@ -423,17 +451,17 @@ class ImgArray {
     * repeat，在水平和竖直方向重复数组
     * @param {number} row - 在高度方向上重复的次数，也就是在行方向上重复的次数
     * @param {number} col - 在宽度方向上重复的次数，也就是在列方向上重复的次数
-    * @returns {ImgArray|undefined} 重复后的结果，若row * col < 2，则返回undefined
+    * @returns {ImgArray|undefined} 重复后的结果，若row * col &lt; 2，则返回undefined
     */
     repeat(row, col) {
-        if (row * col < 2) {
+        if (row * col &lt; 2) {
             console.error(`错误：repeat参数错误，row=${row},col=${col}`);
             return;
         }
         let outarr = new ImgArray({ height: row * this.height, width: col * this.width, channel: this.channel });
-        for (let hidx = 0; hidx < outarr.height; hidx++) {
-            for (let widx = 0; widx < outarr.width; widx++) {
-                for (let cidx = 0; cidx < this.channel; cidx++) {
+        for (let hidx = 0; hidx &lt; outarr.height; hidx++) {
+            for (let widx = 0; widx &lt; outarr.width; widx++) {
+                for (let cidx = 0; cidx &lt; this.channel; cidx++) {
                     let tmpv = this.getel(hidx % this.height, widx % this.width, cidx);
                     outarr.setel(hidx, widx, cidx, tmpv);
                 }
@@ -448,9 +476,9 @@ class ImgArray {
      */
     fliplr() {
         let outarr = this.empty(false);
-        for (let hidx = 0; hidx < this.height; hidx++) {
-            for (let widx = 0; widx < this.width; widx++) {
-                for (let cidx = 0; cidx < this.channel; cidx++) {
+        for (let hidx = 0; hidx &lt; this.height; hidx++) {
+            for (let widx = 0; widx &lt; this.width; widx++) {
+                for (let cidx = 0; cidx &lt; this.channel; cidx++) {
                     let tmpv = this.getel(hidx, widx, cidx);
                     outarr.setel(hidx, this.width - widx - 1, cidx, tmpv);
                 }
@@ -465,9 +493,9 @@ class ImgArray {
     */
     flipud() {
         let outarr = this.empty(false);
-        for (let hidx = 0; hidx < this.height; hidx++) {
-            for (let widx = 0; widx < this.width; widx++) {
-                for (let cidx = 0; cidx < this.channel; cidx++) {
+        for (let hidx = 0; hidx &lt; this.height; hidx++) {
+            for (let widx = 0; widx &lt; this.width; widx++) {
+                for (let cidx = 0; cidx &lt; this.channel; cidx++) {
                     let tmpv = this.getel(hidx, widx, cidx);
                     outarr.setel(this.height - hidx - 1, widx, cidx, tmpv)
                 }
@@ -484,9 +512,9 @@ class ImgArray {
     rollud(dy = 100) {
         dy = -Math.sign(dy) * (Math.abs(dy) % this.height);
         let newarr = this.empty(false);
-        for (let hidx = 0; hidx < this.height; hidx++) {
-            for (let widx = 0; widx < this.width; widx++) {
-                for (let cidx = 0; cidx < this.channel; cidx++) {
+        for (let hidx = 0; hidx &lt; this.height; hidx++) {
+            for (let widx = 0; widx &lt; this.width; widx++) {
+                for (let cidx = 0; cidx &lt; this.channel; cidx++) {
                     let tmpv = this.getel(hidx, widx, cidx);
                     newarr.setel((hidx + dy + this.height) % this.height, widx, cidx, tmpv)
                 }
@@ -503,9 +531,9 @@ class ImgArray {
     rolllr(dx = 100) {
         dx = Math.sign(dx) * (Math.abs(dx) % this.width);
         let newarr = this.empty(false);
-        for (let hidx = 0; hidx < this.height; hidx++) {
-            for (let widx = 0; widx < this.width; widx++) {
-                for (let cidx = 0; cidx < this.channel; cidx++) {
+        for (let hidx = 0; hidx &lt; this.height; hidx++) {
+            for (let widx = 0; widx &lt; this.width; widx++) {
+                for (let cidx = 0; cidx &lt; this.channel; cidx++) {
                     let tmpv = this.getel(hidx, widx, cidx);
                     newarr.setel(hidx, (widx + dx + this.width) % this.width, cidx, tmpv)
                 }
@@ -529,12 +557,12 @@ class ImgArray {
         let sin = Math.sin(rad);
         let dx = cx - cx * cos + cy * sin;
         let dy = cy - cx * sin - cy * cos;
-        for (let hidx = 0; hidx < this.height; hidx++) {
-            for (let widx = 0; widx < this.width; widx++) {
+        for (let hidx = 0; hidx &lt; this.height; hidx++) {
+            for (let widx = 0; widx &lt; this.width; widx++) {
                 let oldwidx = cos * widx - sin * hidx + dx;
                 let oldhidx = sin * widx + cos * hidx + dy;
                 if (!this.checkisvalid(oldhidx, oldwidx, 0)) continue;
-                for (let cidx = 0; cidx < this.channel; cidx++) {
+                for (let cidx = 0; cidx &lt; this.channel; cidx++) {
                     let tmpv = this.getel(oldhidx, oldwidx, cidx);
                     newarr.setel(hidx, widx, cidx, tmpv);
                 }
@@ -633,7 +661,7 @@ class ImgArray {
      */
     div(otherArrayOrValue) {
         const divFunc = (x, y) => x / y;
-        if (typeof otherArrayOrValue === 'number' && otherArrayOrValue !== 0) {
+        if (typeof otherArrayOrValue === 'number' &amp;&amp; otherArrayOrValue !== 0) {
             return this.vectorize(x => divFunc(x, otherArrayOrValue));
         } else if (otherArrayOrValue instanceof ImgArray) {
             if (otherArrayOrValue.data.some(value => value === 0)) {
@@ -654,7 +682,7 @@ class ImgArray {
      * @returns {ImgArray} 截断后的结果
      */
     clamp(vmin = 0, vmax = 255) {
-        return this.vectorize(x => x < vmin ? vmin : (x > vmax ? vmax : x));
+        return this.vectorize(x => x &lt; vmin ? vmin : (x > vmax ? vmax : x));
     }
 
     /**
@@ -688,7 +716,7 @@ class ImgArray {
      * @returns {ImgArray} ReLU函数结果
      */
     relu(value = 0) {
-        return this.vectorize(x => x < value ? value : x);
+        return this.vectorize(x => x &lt; value ? value : x);
     }
 
     /**
@@ -753,7 +781,7 @@ class ImgArray {
         //区间变换
         let func = (x) => {
             if (x >= upper) return vmax;
-            if (x <= lower) return vmin;
+            if (x &lt;= lower) return vmin;
             return (x - lower) / (upper - lower) * (vmax - vmin) + vmin;
         }
         return this.vectorize(func);
@@ -768,7 +796,7 @@ class ImgArray {
         let minv = this.data[0];
         let maxv = this.data[0];
         this.data.forEach((x) => {
-            if (x < minv) {
+            if (x &lt; minv) {
                 minv = x;
                 return
             }
@@ -811,9 +839,9 @@ class ImgArray {
         let newheight = this.height + t + b;
         let newwidth = this.width + l + r;
         let newarr = new ImgArray({ height: newheight, width: newwidth, channel: this.channel }).fill(fillvalue);
-        for (let hidx = t; hidx < this.height + t; hidx++) {
-            for (let widx = l; widx < this.width + l; widx++) {
-                for (let cidx = 0; cidx < this.channel; cidx++) {
+        for (let hidx = t; hidx &lt; this.height + t; hidx++) {
+            for (let widx = l; widx &lt; this.width + l; widx++) {
+                for (let cidx = 0; cidx &lt; this.channel; cidx++) {
                     let ohidx = hidx - t;
                     let owidx = widx - l;
                     let tmpv = this.getel(ohidx, owidx, cidx);
@@ -835,13 +863,13 @@ class ImgArray {
     slice(sthidx, edhidx, stwidx, edwidx) {
         //参数含义分别别是高的起始和结束位置（不包含结束位置），宽的起始和结束位置（不包含结束位置）
         //返回一个新的ImgArray对象
-        if (this.checkisvalid(sthidx, stwidx, 0) && this.checkisvalid(edhidx - 1, edwidx - 1, 0)) {
+        if (this.checkisvalid(sthidx, stwidx, 0) &amp;&amp; this.checkisvalid(edhidx - 1, edwidx - 1, 0)) {
             let newheight = edhidx - sthidx;
             let newwidth = edwidx - stwidx;
             let newimgarr = new ImgArray({ height: newheight, width: newwidth, channel: this.channel });
-            for (let hidx = 0; hidx < newheight; hidx++) {
-                for (let widx = 0; widx < newwidth; widx++) {
-                    for (let cidx = 0; cidx < this.channel; cidx++) {
+            for (let hidx = 0; hidx &lt; newheight; hidx++) {
+                for (let widx = 0; widx &lt; newwidth; widx++) {
+                    for (let cidx = 0; cidx &lt; this.channel; cidx++) {
                         let tmpv = this.getel(hidx + sthidx, widx + stwidx, cidx);
                         newimgarr.setel(hidx, widx, cidx, tmpv);
                     }
@@ -867,8 +895,8 @@ class ImgArray {
 
         let padimgar = this.pad({ l: padx, t: pady, r: padx, b: pady, fillvalue });
         let imgarrs = [];
-        for (let idxh = 0; idxh < kernelheight; idxh++) {
-            for (let idxw = 0; idxw < kernelwidth; idxw++) {
+        for (let idxh = 0; idxh &lt; kernelheight; idxh++) {
+            for (let idxw = 0; idxw &lt; kernelwidth; idxw++) {
                 if (pattern[idxh][idxw] == 0) continue;
                 imgarrs.push(padimgar.slice(idxh, idxh + this.height, idxw, idxw + this.width));
             }
@@ -886,7 +914,7 @@ class ImgArray {
      */
     neighbor(sizes = [3, 3], fillvalue = 0) {
         let pt = [];
-        for (let idxh = 0; idxh < sizes[0]; idxh++) {
+        for (let idxh = 0; idxh &lt; sizes[0]; idxh++) {
             pt.push(Array(sizes[1]).fill(1));
         }
         return this.structure(pt, fillvalue);
@@ -899,8 +927,8 @@ class ImgArray {
      */
     apply_along_channel(func) {
         let outimgarr = new ImgArray({ height: this.height, width: this.width, channel: 1 });
-        for (let idxh = 0; idxh < this.height; idxh++) {
-            for (let idxw = 0; idxw < this.width; idxw++) {
+        for (let idxh = 0; idxh &lt; this.height; idxh++) {
+            for (let idxw = 0; idxw &lt; this.width; idxw++) {
                 let stidx = this.idxtoelidx(idxh, idxw, 0);
                 let data = this.data.slice(stidx, stidx + this.channel);
                 let value = func(data);
@@ -949,7 +977,7 @@ class ImgArray {
             return this.apply_along_channel(func)
         }
         let minv = this.data[0];
-        this.data.forEach((x) => { if (x < minv) minv = x });
+        this.data.forEach((x) => { if (x &lt; minv) minv = x });
         return minv;
     }
 
@@ -963,7 +991,7 @@ class ImgArray {
         //判断weights的长度与通道数相同
         let func = (x) => {
             let res = 0
-            for (let i = 0; i < weights.length; i++) {
+            for (let i = 0; i &lt; weights.length; i++) {
                 res += x[i] * weights[i]
             }
             return res + bais
@@ -1031,9 +1059,9 @@ class ImgArray {
         function creategausskernel(sigma, kernel_size) {
             let kernel = [];
             let center = Math.floor(kernel_size[0] / 2);
-            for (let i = 0; i < kernel_size[0]; i++) {
+            for (let i = 0; i &lt; kernel_size[0]; i++) {
                 let row = [];
-                for (let j = 0; j < kernel_size[1]; j++) {
+                for (let j = 0; j &lt; kernel_size[1]; j++) {
                     let x = i - center;
                     let y = j - center;
                     let value = (1 / (2 * Math.PI * sigma * sigma)) * Math.exp(-(x * x + y * y) / (2 * sigma * sigma));
@@ -1043,8 +1071,8 @@ class ImgArray {
             }
             // 归一化
             let sum = kernel.reduce((a, b) => a.concat(b)).reduce((a, b) => a + b);
-            for (let i = 0; i < kernel_size[0]; i++) {
-                for (let j = 0; j < kernel_size[1]; j++) {
+            for (let i = 0; i &lt; kernel_size[0]; i++) {
+                for (let j = 0; j &lt; kernel_size[1]; j++) {
                     kernel[i][j] /= sum;
                 }
             }
@@ -1271,11 +1299,11 @@ class ImgArray {
         //自适应阈值分割，后续讨论，有问题
         let tmparr = this.neighbor(sizes, fillvalue);
         let res = new Tensor(this.width, this.height);
-        for (let i = 0; i < this.width; i++) {
-            for (let j = 0; j < this.height; j++) {
+        for (let i = 0; i &lt; this.width; i++) {
+            for (let j = 0; j &lt; this.height; j++) {
                 let sum = 0;
-                for (let m = 0; m < sizes[0]; m++) {
-                    for (let n = 0; n < sizes[1]; n++) {
+                for (let m = 0; m &lt; sizes[0]; m++) {
+                    for (let n = 0; n &lt; sizes[1]; n++) {
                         sum += tmparr.get(m, n);
                     }
                 }
@@ -1301,7 +1329,7 @@ class ImgArray {
         function calclbp(x) {
             let tmpnew = 0;
             let weights = [128, 64, 32, 1, 0, 16, 2, 4, 8];
-            for (let i = 0; i < 9; i++) {
+            for (let i = 0; i &lt; 9; i++) {
                 if (x[i] > x[4]) {
                     tmpnew += weights[i];
                 }
@@ -1328,8 +1356,8 @@ class ImgArray {
         function calclmi(x) {
             let tmpnew = 0;
             let centvalue = x[centerpos];
-            for (let i = 0; i < x.length; i++) {
-                if (x[i] < centvalue) {
+            for (let i = 0; i &lt; x.length; i++) {
+                if (x[i] &lt; centvalue) {
                     tmpnew += 1;
                 }
             }
@@ -1354,7 +1382,7 @@ class ImgArray {
         function calcell(x) {
             let tmpnew = 0;
             let centerpos = Math.floor(x.length / 2);
-            for (let i = 0; i < x.length; i++) {
+            for (let i = 0; i &lt; x.length; i++) {
                 if (x[i] >= 0.5) {
                     tmpnew += 1;
                 }
@@ -1420,8 +1448,8 @@ class ImgArray {
         let height = hrange[1] - hrange[0]
         let ximgarr = new ImgArray({ height, width, channel: 1 })
         let yimgarr = new ImgArray({ height, width, channel: 1 })
-        for (let hidx = 0; hidx < height; hidx++) {
-            for (let widx = 0; widx < width; widx++) {
+        for (let hidx = 0; hidx &lt; height; hidx++) {
+            for (let widx = 0; widx &lt; width; widx++) {
                 ximgarr.setel(hidx, widx, 0, widx + wrange[0]);
                 yimgarr.setel(hidx, widx, 0, hidx + hrange[0]);
             }
@@ -1544,7 +1572,7 @@ class ImgArray {
      */
     static fromArray(arr, shape, dtype = 'float32') {
         //从数组创建ImgArray，arr的类型typedarray或array,检查个数、长度、类型是否一致，多维array的话flatten为一维
-        if (!Array.isArray(arr) && !ArrayBuffer.isView(arr)) {
+        if (!Array.isArray(arr) &amp;&amp; !ArrayBuffer.isView(arr)) {
             throw new Error('arr输入类型必须是：array or TypedArray');
         }
         let flatArray;
@@ -1577,7 +1605,7 @@ class ImgArray {
         }
         let func = (v1) => {
             let res = 0
-            for (let i = 0; i < v2.length; i++) {
+            for (let i = 0; i &lt; v2.length; i++) {
                 res += (v1[i] - v2[i]) * (v1[i] - v2[i]);
             }
             return Math.sqrt(res);
@@ -1599,7 +1627,7 @@ class ImgArray {
         let l2 = Math.hypot(...v2)
         let func = (v1) => {
             let res = 0
-            for (let i = 0; i < v2.length; i++) {
+            for (let i = 0; i &lt; v2.length; i++) {
                 res += v1[i] * v2[i]
             }
             return 1 - res / (l2 * Math.hypot(...v1) + 0.0000001)
@@ -1611,7 +1639,7 @@ class ImgArray {
     /**
      * kmeans，使用 K 均值聚类算法对图像数据进行聚类。
      * @param {number} k - 聚类的数量。
-     * @param {Array<Array<number>> | null} centers - 初始聚类中心，是一个二维数组（kxchannel）。如果为 `null`，程序将随机选择初始中心。
+     * @param {Array&lt;Array&lt;number>> | null} centers - 初始聚类中心，是一个二维数组（kxchannel）。如果为 `null`，程序将随机选择初始中心。
      * @param {string} [disttype='dist'] - 距离度量方式，可选值为 'dist'（欧氏距离）或 'cossimdist'（余弦相似度）。
      * @returns {Array} 返回两个值：
      * - `newcenters`：更新后的聚类中心。
@@ -1625,7 +1653,7 @@ class ImgArray {
         //初始化聚类中心
         if (centers === null) {
             centers = []
-            for (let i = 0; i < k; i++) {
+            for (let i = 0; i &lt; k; i++) {
                 let tmpx = parseInt(Math.random() * this.width)
                 let tmpy = parseInt(Math.random() * this.height)
                 let idx = this.idxtoelidx(tmpy, tmpx, 0)
@@ -1642,23 +1670,23 @@ class ImgArray {
 
         //计算像素到各中心的距离
         let dists = []
-        for (let i = 0; i < k; i++) {
+        for (let i = 0; i &lt; k; i++) {
             let tmpdist = disttype == 'dist' ? this.dist(centers[i]) : this.cossimdist(centers[i])
             dists.push(tmpdist)
         }
         //计算聚类结果
         let clusternum = Array(k).fill(0)
         let newcenters = Array(k)
-        for (let i = 0; i < k; i++) {
+        for (let i = 0; i &lt; k; i++) {
             newcenters[i] = new Array(this.channel).fill(0);
         }
 
         let clusterresult = new ImgArray({ height: this.height, width: this.width, channel: 1, lazy: false, dtype: 'cuint8' })
-        for (let i = 0; i < dists[0].data.length; i++) {
+        for (let i = 0; i &lt; dists[0].data.length; i++) {
             let minv = Infinity;
             let minidx = 0;
-            for (let idx = 0; idx < dists.length; idx++) {
-                if (dists[idx].data[i] < minv) {
+            for (let idx = 0; idx &lt; dists.length; idx++) {
+                if (dists[idx].data[i] &lt; minv) {
                     minv = dists[idx].data[i]
                     minidx = idx
                 }
@@ -1669,15 +1697,15 @@ class ImgArray {
             let [h, w, c] = dists[0].elidxtoidx(i)
             let idx = this.idxtoelidx(h, w, 0)
             let v2 = this.data.slice(idx, idx + this.channel)
-            for (let idx = 0; idx < this.channel; idx++) {
+            for (let idx = 0; idx &lt; this.channel; idx++) {
                 newcenters[minidx][idx] = v2[idx] + newcenters[minidx][idx]
             }
 
         }
 
         //更新聚类中心
-        for (let idx = 0; idx < centers.length; idx++) {
-            for (let i = 0; i < this.channel; i++) {
+        for (let idx = 0; idx &lt; centers.length; idx++) {
+            for (let i = 0; i &lt; this.channel; i++) {
                 newcenters[idx][i] = newcenters[idx][i] / clusternum[idx];
             }
         }
@@ -1723,7 +1751,7 @@ class ImgArray {
     hwc2chw() {
         let chs = this.dsplit();
         let res = new ImgArray({ height: this.channel, width: this.height, channel: this.width, dtype: this.dtype });
-        for (let i = 0; i < chs.length; i++) {
+        for (let i = 0; i &lt; chs.length; i++) {
             res.data.set(chs[i].data, i * chs[i].data.length);
         }
         return res;
@@ -1740,12 +1768,12 @@ class ImgArray {
         let baselen = h * w;
         let res = new ImgArray({ height: h, width: w, channel: c, dtype: this.dtype });
         let offsets = [];
-        for (let i = 0; i < c; i++) {
+        for (let i = 0; i &lt; c; i++) {
             offsets.push(i * h * w);
         }
-        for (let i = 0; i < baselen; i++) {
+        for (let i = 0; i &lt; baselen; i++) {
             let idx = i * c;
-            for (let j = 0; j < c; j++) {
+            for (let j = 0; j &lt; c; j++) {
                 let oidx = offsets[j] + i;
                 res.data[idx + j] = this.data[oidx];
             }
@@ -1797,20 +1825,20 @@ class ImgArray {
      */
     toString() {
         let str = `shape: [${this.height}, ${this.width}, ${this.channel}]\ndtype: ${this.dtype}\ndata :\n[`;
-        for (let h = 0; h < this.height; h++) {
+        for (let h = 0; h &lt; this.height; h++) {
             let block = h ? ' [' : '[';
-            for (let w = 0; w < this.width; w++) {
+            for (let w = 0; w &lt; this.width; w++) {
                 let line = w ? '  [' : '[';
-                for (let c = 0; c < this.channel; c++) {
+                for (let c = 0; c &lt; this.channel; c++) {
                     let v = this.getel(h, w, c);
                     line += v.toFixed(2) + ' ';
                 }
-                if (w < this.width - 1)
+                if (w &lt; this.width - 1)
                     block += line + ']\n';
                 else
                     block += line + ']';
             }
-            if (h < this.height - 1)
+            if (h &lt; this.height - 1)
                 str += block + ']\n\n';
             else
                 str += block + ']';
@@ -1892,7 +1920,7 @@ class Img extends ImgArray {
         let pixelnum = imgarray.data.length / imgarray.channel;
         if (imgarray.channel == 1) {
             img = new Img({ height: imgarray.height, width: imgarray.width });
-            for (let i = 0; i < pixelnum; i += 1) {
+            for (let i = 0; i &lt; pixelnum; i += 1) {
                 img.data[i * 4] = imgarray.data[i];
                 img.data[i * 4 + 1] = imgarray.data[i];
                 img.data[i * 4 + 2] = imgarray.data[i];
@@ -1900,7 +1928,7 @@ class Img extends ImgArray {
             }
         } else if (imgarray.channel == 3) {
             img = new Img({ height: imgarray.height, width: imgarray.width });
-            for (let i = 0; i < pixelnum; i += 1) {
+            for (let i = 0; i &lt; pixelnum; i += 1) {
                 img.data[i * 4] = imgarray.data[i * 3];
                 img.data[i * 4 + 1] = imgarray.data[i * 3 + 1];
                 img.data[i * 4 + 2] = imgarray.data[i * 3 + 2];
@@ -1952,7 +1980,7 @@ class Img extends ImgArray {
      * fromurl，从图像链接生成图像。
      * @static
      * @param {string} imgurl - 图像链接。
-     * @returns {Promise<Img>} - 生成的图像对象，需要使用await。
+     * @returns {Promise&lt;Img>} - 生成的图像对象，需要使用await。
      */
     static fromurl(imgurl) {
         return new Promise(function (r, e) {
@@ -1970,7 +1998,7 @@ class Img extends ImgArray {
      * fromblob，从blob对象生成图像。
      * @static
      * @param {Blob} blob - blob对象。
-     * @returns {Promise<Img>} - 生成的图像对象。
+     * @returns {Promise&lt;Img>} - 生成的图像对象。
      */
     static fromblob(blob) {
         //返回是个promise对象，需要使用await
@@ -1985,14 +2013,14 @@ class Img extends ImgArray {
      * fromfile，从本地文件生成图像。
      * @static
      * @param {File} fileobj - 本地文件对象。
-     * @returns {Promise<Img>} - 生成的图像对象。
+     * @returns {Promise&lt;Img>} - 生成的图像对象。
      */
     static fromfile(fileobj) {
         //从本地文件生成图像
         /*
         使用方法
         html:
-        <input type="file" id="fileInput">
+        &lt;input type="file" id="fileInput">
         js:
         var finput=document.querySelector('#fileInput')
             finput.addEventListener('change',()=>{
@@ -2069,7 +2097,7 @@ class Img extends ImgArray {
      * @static
      * @param {number} [h] - 输出图像的高度。
      * @param {number} [w] - 输出图像的宽度。
-     * @returns {Promise<Img>} - 生成的图像对象。
+     * @returns {Promise&lt;Img>} - 生成的图像对象。
      */
     static fromcamera(h = null, w = null) {
         //从摄像头头获取一幅图像
@@ -2169,11 +2197,11 @@ class Img extends ImgArray {
     /**
      * hist，获取直方图。
      * @param {number} [channel = 3] - 通道数。
-     * @returns {Uint32Array|Array<Uint32Array>} - 生成的直方图。
+     * @returns {Uint32Array|Array&lt;Uint32Array>} - 生成的直方图。
      */
     hist(channel = 3) {
         //函数接收通道数(0,1,2),输入3时表示三通道的直方图
-        if (typeof channel !== 'number' || channel < 0 || channel > 3) {
+        if (typeof channel !== 'number' || channel &lt; 0 || channel > 3) {
             throw new TypeError('Invalid channel parameter');
         }
         if (channel === 3) {
@@ -2241,7 +2269,7 @@ class Img extends ImgArray {
             x = x / 255;
             let r, g, b;
             let wa, wb;
-            if (x < 0.5) {
+            if (x &lt; 0.5) {
                 wa = (0.5 - x) / 0.5
                 wb = x / 0.5
                 r = wa * 0.705882352941 + wb * 0.865;
@@ -2257,12 +2285,12 @@ class Img extends ImgArray {
             }
             return [r * 255, g * 255, b * 255]
         }
-        for (let i = 0; i < 256; i++) {
+        for (let i = 0; i &lt; 256; i++) {
             colormap.set(i, calc(i));
         }
         let outimg = this.empty(false);
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
+        for (let y = 0; y &lt; this.height; y++) {
+            for (let x = 0; x &lt; this.width; x++) {
                 let [r, g, b, a] = this.getpixel(x, y);
                 [r, g, b] = colormap.get(parseInt((r + g + b) / 3));
                 outimg.setpixel(x, y, [r, g, b, a]);
@@ -2330,13 +2358,13 @@ class Img extends ImgArray {
         //this.dsplit或循环   this.vectorize  
         // 推荐双层循环，对宽和高进行遍历，通过使用getelement获取通道的值
         const bitplaneArray = new ImgArray({ height: this.height, width: this.width, channel: 1 })
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
+        for (let y = 0; y &lt; this.height; y++) {
+            for (let x = 0; x &lt; this.width; x++) {
                 //计算当前像素在data数组的索引
                 //let index = this.idxtoelidx(y, x, cidx);
                 //let val = this.data[index];              //获得指定通道的值
                 let val = this.getel(y, x, cidx);
-                const bitValue = (val >> bitnum) & 1;    //提取指定比特位的值
+                const bitValue = (val >> bitnum) &amp; 1;    //提取指定比特位的值
                 //bitplaneArray.data[y * this.width + x] = bitValue * 255;
                 bitplaneArray.setel(y, x, 0, bitValue * 255);
             }
@@ -2352,10 +2380,10 @@ class Img extends ImgArray {
         //将RGB图像转换为YCbCr图像
         // 创建一个与原始图像相同大小的新图像对象
         let ycbcrImg = new Img({ width: this.width, height: this.height, channel: this.channel });
-        if (this.channel < 3) {
+        if (this.channel &lt; 3) {
             console.error("该图像不是RGB图像，无法进行转换")
         }
-        for (let i = 0; i < this.data.length; i += this.channel) {
+        for (let i = 0; i &lt; this.data.length; i += this.channel) {
             // 获取当前像素的RGB值
             let r = this.data[i];
             let g = this.data[i + 1];
@@ -2379,10 +2407,10 @@ class Img extends ImgArray {
      */
     YCbCrtoRGB() {
         let rgbImg = new Img({ width: this.width, height: this.height, channel: this.channel });
-        if (this.channel < 3) {
+        if (this.channel &lt; 3) {
             console.error("该图像无法转换为RGB图像")
         }
-        for (let i = 0; i < this.data.length; i += this.channel) {
+        for (let i = 0; i &lt; this.data.length; i += this.channel) {
             // 获取当前像素的RGB值
             let y = this.data[i];
             let Cb = this.data[i + 1];
@@ -2583,7 +2611,7 @@ class DICM {
         }
         else throw new Error('file head error');
         let headmeta = new Map([[firsthead.attrcode, firsthead]]);
-        while (this.offset < headendpos) {
+        while (this.offset &lt; headendpos) {
             let metadata = this.#getheaderonetag();
             if (metadata.attrcode == '0002,0010') {
                 [this.islitteendian, this.isexplicitvr] = this.#getdatametamode(metadata.attrcode, metadata.value);
@@ -2634,7 +2662,7 @@ class DICM {
      */
     #parsedatameta() {
         let datameta = new Map();
-        while (this.offset < this.bytearr.length) {
+        while (this.offset &lt; this.bytearr.length) {
             let metadata = null;
             if (this.isexplicitvr) {
                 metadata = this.#getheaderonetag(this.islitteendian);
@@ -2677,7 +2705,7 @@ class DICM {
      * fromurl，从URL中加载DICM文件。
      * @static
      * @param {string} url - 文件的URL地址。
-     * @returns {Promise<DICM>} - 返回一个 Promise，resolve 时返回一个 DICM 对象。
+     * @returns {Promise&lt;DICM>} - 返回一个 Promise，resolve 时返回一个 DICM 对象。
      */
     static async fromurl(url) {
         let bf = await (await fetch(url)).arrayBuffer();
@@ -2865,4 +2893,26 @@ function delay(n) {
 }
 
 //当将该文件用于ES6 Module时，取消以下注释，导出Img, ImgArray 和DICM类
-//export {Img, ImgArray,DICM} ;
+//export {Img, ImgArray,DICM} ;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DICM.html">DICM</a></li><li><a href="Img.html">Img</a></li><li><a href="ImgArray.html">ImgArray</a></li></ul><h3>Global</h3><ul><li><a href="global.html#delay">delay</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sun Jan 19 2025 10:50:42 GMT+0800 (中国标准时间)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

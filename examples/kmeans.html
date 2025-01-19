@@ -26,8 +26,7 @@
             var [tmpcenters,res]=arr.kmeans(k=4,centers=null,disttype='dist')
             console.log(res)
             for (let i=0;i<runningloop;i++){
-                image=Img.fromarray(res.stretch(0,255))
-                image.show()
+                res.show({vmin:0,vmax:3})
                 console.log(tmpcenters)
                 let kk=arr.kmeans(k=6,centers=tmpcenters,disttype='dist')
                 tmpcenters=kk[0]
