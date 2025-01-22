@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Maximum value pooling</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>ImgArray.max</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        max(ischannel = false)
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        Calculate maximum value, expansion, maximum value pooling.
+    </p>
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>ischannel: When ischannel is True, calculate the maximum value along the channel,<br>
+            otherwise calculate the global maximum value.
+        </li>
+    </ul>
+
+    <h2>Demons</h2>
+
+    <!--A Demo-->
+    <h3>Demo</h3>
+    <p>show result as img.</p>
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+    <h4>Result</h4>
+    <div id="demo1result">
+        <canvas id="cas1"></canvas>
+        <canvas id="cas2"></canvas>
+    </div>
+
+    <script id="demo1code">
+        let cass = document.querySelectorAll('canvas');
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0],isfull=true);
+            let imgar = img.toarray()
+            imgar.max(ischannel = true).show({cas:cass[1]});
+        })
+    </script>
+
+    <script>
+        var result = document.getElementById("demo1result");
+        var code = document.getElementById("demo1code");
+        var demo1 = document.getElementById("demo1");
+        demo1.innerText = code.innerText;
+    </script>
+</body>
+
+</html>

@@ -111,6 +111,7 @@ Donations to support this project are welcome.
 
 
 ## History
+* tick: 2025-1-22: add ImgArray.scale(), ImgArray.tofile() methods, add examples for ImgArray.cellsim() and ImgArray.LBP() methods. This is a milestone version for apply software authority.
 * tick: 2025-1-19: write the doc of ImageLibJS, mainly by Shuchuo Fu. 
 * tock: 2024-12-27: repeat() and grid()method() are added, and add a DICM format parser which is 
   implemented by raw JavaScript,to support DICOM image.
