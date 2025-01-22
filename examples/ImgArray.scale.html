@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>make arrays to grid</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>ImgArray.scale</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        scale(k=8)
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        scale the array in width and height by k times.
+        k is a integer, larger than 1.
+
+    </p>
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>k: scale factor, larger than 1, default value 8.
+        </li>
+    </ul>
+
+    <h2>Demons</h2>
+
+    <!--A Demo-->
+    <h3>Demo1</h3>
+    <p>show result as image.</p>
+    <h4>Code</h4>
+    <pre id="demo2"></pre>
+    <h4>Result</h4>
+    <div>
+        <canvas class="demo2result1"></canvas>
+    </div>
+    <div>
+        <canvas class="demo2result2"></canvas>
+    </div>
+    <script id="demo2code">
+        var arr = ImgArray.random({ width: 100, height: 100, channel: 1 });
+        var scaledarr = arr.scale(10);
+
+
+    </script>
+    <script>
+        var demo2 = document.getElementById('demo2');
+        var result2 = document.getElementsByClassName('demo2result');
+        var code2 = document.getElementById('demo2code');
+        demo2.innerText = code2.innerText;
+        arr.show({ cas: result2[0] });
+        scaledarr.show({ cas: result2[0] });
+    </script>
+</body>
+
+</html>

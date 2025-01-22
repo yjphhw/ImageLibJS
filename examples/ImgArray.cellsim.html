@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cellular Automaton Simulation</title>
+    <style>
+        /* Ensure the entire body takes up the full viewport height */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centers content vertically */
+            align-items: center; /* Centers content horizontally */
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        h4 {
+            width: 900px;
+            margin-bottom: 40px;
+        }
+
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #3f69d2be;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #04119b;
+        }
+    </style>
+    <script src="../Imagelib.js"></script>
+</head>
+<body>
+    <h1>Cellular Automaton Simulation</h1>
+    <h4>Each cell changes its state based on the states of its eight adjacent cells, defined as follows:<br>
+        If the state of a cell is dead (0) and there are three cells around it that are alive (1), then the next state of the cell is alive (1);<br>
+        If the state of a cell is alive (1) and there are two or three cells around it that are also alive (1), then the next state of the cell is still alive (1);<br>
+        In other cases, the next state of the cell is death (0).</h4>
+    <canvas id="cas"></canvas>
+    <div>
+        <button onclick="startSimulation()">Start Simulation</button>
+        <button onclick="pauseSimulation()">Pause/Resume Simulation</button>
+        <button onclick="restartSimulation()">Restart Simulation</button>
+    </div>
+
+    
+    <script>
+        
+        // 初始化一个 100x100 的随机元胞数组
+        let gridSize = 100;
+        let imgArray =null;
+        let intervalId = null; // 用来存储 setInterval 的 ID
+        let isRunning = false; // 用于判断模拟是否在运行
+        let cas=document.querySelector("#cas");
+
+        // 生成随机初始状态
+        function generateRandomState() {
+            imgArray = ImgArray.random({width:gridSize,height:gridSize,channel:1}).threshold(200,'binary',1);
+        }
+
+        // 显示结果
+        function renderGrid() {
+            imgArray.scale(5).show({vmin:0,vmax:1,cas});
+        }
+
+        // 开始元胞自动机模拟
+        function startSimulation() {
+            if (!isRunning) {
+                isRunning = true;
+                intervalId = setInterval(() => {
+                    imgArray = imgArray.cellsim([3, 3]); // 调用 cellsim 更新状态
+                    renderGrid(); // 更新显示
+                }, 100); // 每100ms更新一次
+            }
+        }
+
+        // 暂停或恢复元胞自动机模拟
+        function pauseSimulation() {
+            if (isRunning) {
+                clearInterval(intervalId); // 清除定时器
+                isRunning = false; // 暂停
+            } else {
+                startSimulation(); // 恢复
+            }
+        }
+
+        // 重新开始模拟
+        function restartSimulation() {
+            clearInterval(intervalId); // 清除现有定时器
+            isRunning = false; // 模拟停止
+            generateRandomState(); // 生成新的随机初始状态
+            renderGrid(); // 重新渲染初始状态
+        }
+
+        // 生成随机初始状态并渲染
+        generateRandomState();
+        renderGrid();
+    </script>
+</body>
+</html>

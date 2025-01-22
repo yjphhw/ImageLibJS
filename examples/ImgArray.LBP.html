@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LBP Simulation</title>
+    <style>
+        /* 重置默认样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #4a90e2;
+            margin-bottom: 20px;
+        }
+
+        h4 {
+            font-size: 18px;
+            color: #555;
+            text-align: center;
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        /* 简单的响应式设计 */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            h4 {
+                font-size: 16px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>LBP Simulation</h1>
+    <h4>
+        The Local Binary Pattern (LBP) is calculated for each cell in the grid. Each cell's LBP value is determined by
+        comparing its value with the values of its eight adjacent cells in a 3x3 neighborhood.
+    </h4>
+
+    <div>
+        <canvas id="cas1"></canvas>
+        <canvas id="cas2"></canvas>
+    </div>
+
+    <script src="../Imagelib.js"></script>
+    <script>
+        let cass=document.querySelectorAll('canvas');
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]);
+            let imgArray = img.toarray();
+            let imgShow = imgArray.lbp().show({ vmin: 0, vmax: 255,cas:cass[1] });
+        });
+    </script>
+</body>
+
+</html>
