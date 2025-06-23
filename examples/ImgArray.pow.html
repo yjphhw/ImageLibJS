@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>exponentiation</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>ImgArray.pow</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        pow(value)
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        Perform power operation on image data.
+    </p>
+
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>value: The exponent for the power operation.</li>
+    </ul>
+
+    <!-- Example -->
+    <h2>Demons</h2>
+
+    <h3>Demon</h3>
+    <p>Show the result as an image.</p>
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+    <h4>Result</h4>
+    <div id="demo1result">
+        <canvas id="cas1"></canvas>
+        <canvas id="cas2"></canvas>
+        <canvas id="cas3"></canvas>
+    </div>
+
+    <script id="demo1code">
+        let cass = document.querySelectorAll('canvas');
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]);
+            img.toarray().div(255).pow(3).show({cas:cass[1],vmax:1});
+            img.toarray().div(255).pow(0.3).show({cas:cass[2],vmax:1});
+        
+        })
+    </script>
+
+    <script>
+        var result = document.getElementById("demo1result");
+        var code = document.getElementById("demo1code");
+        var demo1 = document.getElementById("demo1");
+        demo1.innerText = code.innerText;
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Find the value of the specified bit plane</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>ImgArray.bitplane</h1>
+
+    <h2>Declaration</h2>
+    <p>
+    bitplane(cidx, bitnum) 
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        Calculate Bitplane.
+    </p>
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>cidx:The selected channel has a value ranging from 0 to 3.
+        </li>
+        <li>bitnum:The selected bits range from 0 to 7.
+        </li>
+    </ul>
+
+    <h2>Demons</h2>
+
+    <!--A Demo-->
+    <h3>Demo</h3>
+    <p>show result as img.</p>
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+    <h4>Result</h4>
+    <div id="demo1result">
+    </div>
+
+    <script id="demo1code">
+        let cass = [...document.querySelectorAll('canvas')];
+        Img.fromurl('../images/dog.png').then(img => {
+            console.log(img)
+            img=img.gray();
+            img.show();
+            for (let i =0; i<7;i++){
+                img.bitplane(0, i).show();
+            }
+        })
+    </script>
+
+    <script>
+        var result = document.getElementById("demo1result");
+        var code = document.getElementById("demo1code");
+        var demo1 = document.getElementById("demo1");
+        demo1.innerText = code.innerText;
+    </script>
+
+</body>
+
+</html>

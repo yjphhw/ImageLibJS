@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>create ImgArray</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>Img.applyColorMap</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        applyColorMap(name)
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        apply color map to Img. This is usually used to show gray image in pseudo color.
+
+        The source color is the mean value of rgb value of pixel. The target color is the color map value.
+        
+        all possible colormaps are adapted from OpenCV's colormap.
+    </p>
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>name: color map name, defaut value is 'JET', all possible names can be find in Img.COLORMAPNAMES attribute and possible names are :
+            'AUTUMN', 'BONE', 'CIVIDIS', 'COOL', 'DEEPGREEN', 'HOT', 'HSV', 'INFERNO', 'JET', 'MAGMA', 'OCEAN', 'PARULA', 'PINK', 'PLASMA', 'RAINBOW', 'SPRING', 'SUMMER', 'TURBO', 'TWILIGHT', 'VIRIDIS', 'WINTER'
+        </li>
+        <li> 
+            return pseudo image.
+        </li>
+
+    </ul>
+
+    <h2>Demons</h2>
+
+    <!--A Demo-->
+    <h3>Demo1</h3>
+    <p>apply color map to an Img.</p>
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+    <h4>Result</h4>
+    <div id="demo1result">
+        
+    </div>
+
+    <script id="demo1code">        
+        var [y,x]=ImgArray.meshgrid(hrange=[0,50]);
+        var img=Img.fromarray(x);
+        img.show();
+        img.applyColorMap('JET').show();
+        img.applyColorMap('TWILIGHT').show();
+        img.applyColorMap('HSV').show();
+        //log all possible color map names.
+        console.log(Img.COLORMAPNAMES);
+    </script>
+
+    <script>
+        var result = document.getElementById("demo1result");
+        var code = document.getElementById("demo1code");
+        var demo1 = document.getElementById("demo1");
+        demo1.innerText = code.innerText;
+    </script>
+
+</body>
+</html>

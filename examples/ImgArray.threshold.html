@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>threshold</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>ImgArray.threshold</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        threshold(threshold = 100, method = 'binary', maxval = 255)
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        Apply thresholding to the image based on the specified method. This method is useful for converting grayscale
+        images into binary images or applying other thresholding techniques.
+    </p>
+
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>threshold: The threshold value. Defaults to 100.</li>
+        <li>method: The thresholding method. Defaults to 'binary'.</li>
+        <li>method can be one of the following:
+            <ul>
+                <li>'binary': Binarization.</li>
+                <li>'truncate': Truncation.</li>
+                <li>'binary_inv':Binary conversion (inversion) .</li>
+                <li>'tozero':Zeroing .</li>
+                <li>'tozero_inv':Zeroing (inversion) .</li>
+            </ul>
+        </li>
+        <li>maxval: The maximum value to assign to pixels above the threshold. Defaults to 255.</li>
+    </ul>
+
+    <h2>Demo</h2>
+
+    <!--A Demo-->
+    <h3>Demo</h3>
+    <p>show result as img.</p>
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+    <h4>Result</h4>
+    <div id="demo1result">
+        <canvas id="cas1"></canvas>
+        <canvas id="cas2"></canvas>
+        <canvas id="cas3"></canvas>
+        <canvas id="cas4"></canvas>
+        <canvas id="cas5"></canvas>
+        <canvas id="cas6"></canvas>
+    </div>
+
+    <script id="demo1code">
+        let cass = document.querySelectorAll('canvas');
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]); // 显示原始图像
+            img.threshold(100, 'binary', 255).show(cass[1]); // 二值化阈值处理
+            img.threshold(100, 'truncate', 255).show(cass[2]); // 截断阈值处理
+            img.threshold(100, 'binary_inv', 255).show(cass[3]); // 反二值化阈值处理
+            img.threshold(100, 'tozero', 255).show(cass[4]); // 归零化阈值处理
+            img.threshold(100, 'tozero_inv', 255).show(cass[5]); // 归零化阈值处理（反转）
+        });
+    </script>
+
+    <script>
+        var result = document.getElementById("demo1result");
+        var code = document.getElementById("demo1code");
+        var demo1 = document.getElementById("demo1");
+        demo1.innerText = code.innerText; 
+    </script>
+</body>
+
+</html>

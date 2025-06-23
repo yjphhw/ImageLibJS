@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Median filtering / pooling</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>ImgArray.median</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        median(kernel = [3, 3], fillvalue = 0)
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        Apply median filtering or median pooling to the image.
+        It helps reduce noise while preserving edges.
+    </p>
+
+    <h2>Parameter Description</h2>
+    <ul>
+        <li><strong>kernel:</strong> The size of the sliding window (e.g., [3,3]).</li>
+        <li><strong>fillvalue:</strong> The step size for moving the window.</li>
+    </ul>
+
+    <h2>Demo</h2>
+    <p>Show original and filtered images using different kernel/fillvalue settings.</p>
+
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+
+    <h4>Result</h4>
+    <div id="demo1result">
+        <canvas id="cas1"></canvas>
+        <canvas id="cas2"></canvas>
+        <canvas id="cas3"></canvas>
+    </div>
+
+    <script id="demo1code">
+        let cass = document.querySelectorAll('canvas');
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0], isfull = true);
+            img.toarray().median([3, 3], 0).show({ cas: cass[1] });
+            img.toarray().median([3, 3], 1).show({ cas: cass[2] });
+        });
+    </script>
+
+    <script>
+        var result = document.getElementById("demo1result");
+        var code = document.getElementById("demo1code");
+        var demo1 = document.getElementById("demo1");
+        demo1.innerText = code.innerText;
+    </script>
+</body>
+
+</html>
