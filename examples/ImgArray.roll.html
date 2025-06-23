@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Scrolling Example</title>
+        <script src="../Imagelib.js"></script>
+    </head>
+    <body>
+        <h1>ImgArray.roll</h1>
+
+        <h2>Declaration</h2>
+        <p>
+            rollud(dy = 100), rolllr(dx = 100), rotate(degree = 90)
+
+        </p>
+
+        <h2>Function Description</h2>
+        <p>
+            Perform scrolling and rotation operations on the image.<br>
+            - rollud(dy = 100): Scroll up and down.<br>
+            - rolllr(dx = 100): Scroll left and right.<br>
+            - rotate(degree = 90): rotate.
+        </p>
+
+        <h2>Parameter Description</h2>
+        <ul>
+            <li>dx: The default scrolling distance for up and down is 100.</li>
+            <li>dy: Left and right scrolling distance, default is 100.</li>
+            <li>degree: Rotation angle, default is 90.</li>
+        </ul>
+
+        <!-- Example -->
+        <h2>Demons</h2>
+
+        <h3>Demon</h3>
+        <p>show result as img.</p>
+        <h4>Code</h4>
+        <pre id="demo1"></pre>
+        <h4>Result</h4>
+        <div id="demo1result">
+            <canvas id="cas1"></canvas>
+            <canvas id="cas2"></canvas>
+            <canvas id="cas3"></canvas>
+            <canvas id="cas4"></canvas>
+        </div>
+
+        <script id="demo1code">
+            let cass = document.querySelectorAll('canvas');
+            Img.fromurl('../images/dog.png').then(img => {
+                img.show(cass[0]);
+                let v = 0;
+                setInterval(() => {
+                    img.rollud(v++).show(cass[1]);
+                    img.rolllr(v).show(cass[2]);
+                    img.rotate(v).show(cass[3]);
+                }, 30);
+            });
+        </script>
+
+        <script>
+            var result = document.getElementById("demo1result");
+            var code = document.getElementById("demo1code");
+            var demo1 = document.getElementById("demo1");
+            demo1.innerText = code.innerText;
+        </script>
+    </body>
+</html>

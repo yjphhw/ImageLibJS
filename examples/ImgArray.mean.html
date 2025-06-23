@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Mean value pooling</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>ImgArray.mean</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        mean(ischannel = false)
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        Calculate mean value, average pooling.
+    </p>
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>ischannel: When ischannel is True, calculate the mean along the channel,<br>
+            otherwise calculate the global mean value.
+        </li>
+    </ul>
+
+    <h2>Demo</h2>
+    <p>Show results as images.</p>
+
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+
+    <h4>Result</h4>
+    <div id="demo1result">
+        <canvas id="cas0"></canvas>
+        <canvas id="cas1"></canvas>
+        <canvas id="cas2"></canvas>
+    </div>
+
+    <script id="demo1code">
+        let cass = document.querySelectorAll('canvas');
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]);
+            img.toarray().mean(ischannel = true).show({ cas: cass[1] });
+            console.log('mean value of arr is', img.toarray().mean())
+        });
+    </script>
+
+    <script>
+        var result = document.getElementById("demo1result");
+        var code = document.getElementById("demo1code");
+        var demo1 = document.getElementById("demo1");
+        demo1.innerText = code.innerText;
+    </script>
+</body>
+
+</html>

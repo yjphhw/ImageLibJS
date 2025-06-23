@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Square Function</title>
+    <script src="../Imagelib.js"></script>
+</head>
+<body>
+    <h1>ImgArray.square</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        square()
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        Calculate the square of each element in the image array.
+    </p>
+
+    <h2>Parameter Description</h2>
+    <ul>
+        <li>No parameters.</li>
+    </ul>
+
+    <h2>Demo</h2>
+
+    <!--A Demo-->
+    <h3>Demo</h3>
+    <p>show result as img.</p>
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+    <h4>Result</h4>
+    <div id="demo1result">
+        <canvas id="cas1"></canvas>
+        <canvas id="cas2"></canvas>
+    </div>
+
+    <script id="demo1code">
+        let cass = document.querySelectorAll('canvas');
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]);
+            img.toarray().div(255).square().show({cas:cass[1],vmax:1});
+        });
+    </script>
+
+    <script>
+        var result = document.getElementById("demo1result");
+        var code = document.getElementById("demo1code");
+        var demo1 = document.getElementById("demo1");
+        demo1.innerText = code.innerText;
+    </script>
+</body>
+</html>

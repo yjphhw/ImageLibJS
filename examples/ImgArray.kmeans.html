@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMeans Clustering</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>ImgArray.kmeans</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        kmeans(k, centers = null, disttype = 'dist')
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        Perform K-Means clustering on image data. This function iteratively assigns pixels to the nearest cluster center and updates the centers based on the assigned pixels.
+    </p>
+
+    <h2>Parameter Description</h2>
+    <ul>
+        <li><strong>k:</strong> Number of clusters.</li>
+        <li><strong>centers:</strong> Optional initial cluster centers. If not provided, random centers are selected.</li>
+        <li><strong>disttype:</strong> Distance calculation method. Default is 'dist' (Euclidean distance).</li>
+    </ul>
+
+    <h2>Demos</h2>
+
+    <!-- A Demo -->
+    <h3>Demo</h3>
+    <p>Show intermediate results of K-Means clustering per iteration.</p>
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+    <h4>Result</h4>
+    <div id="demo1result">
+        <canvas id="cas"></canvas>
+    </div>
+
+    <script id="demo1code">
+        var image = null;
+        var cas = document.querySelector('canvas');
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cas);
+            let runningloop = 30;
+            let arr = img.toarray();
+            console.log(arr);
+            var [tmpcenters, res] = arr.kmeans(k = 4, centers = null, disttype = 'dist');
+            console.log(res);
+            for (let i = 0; i < runningloop; i++) {
+                res.show({ vmin: 0, vmax: 3 });
+                console.log(tmpcenters);
+                let kk = arr.kmeans(k = 6, centers = tmpcenters, disttype = 'dist');
+                tmpcenters = kk[0];
+                res = kk[1];
+            }
+        });
+    </script>
+
+    <script>
+        var demo1 = document.getElementById("demo1");
+        var code = document.getElementById("demo1code");
+        demo1.innerText = code.innerText;
+    </script>
+
+</body>
+</html>

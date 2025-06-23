@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Linearc Transformation</title>
+    <script src="../Imagelib.js"></script>
+</head>
+
+<body>
+    <h1>ImgArray.linearc</h1>
+
+    <h2>Declaration</h2>
+    <p>
+        linearc(weights, bias = 0)
+    </p>
+
+    <h2>Function Description</h2>
+    <p>
+        Apply a linear-arctangent transformation to the image. This is a non-linear enhancement function that combines linear and arctangent scaling for better contrast.
+    </p>
+
+    <h2>Parameter Description</h2>
+    <ul>
+        <li><strong>weights:</strong> Array of weights for each channel (e.g., [0.1, 0.2, 0.3]).</li>
+        <li><strong>bias:</strong> Optional scalar bias added after applying the transformation.</li>
+    </ul>
+
+    <h2>Demos</h2>
+
+    <!-- A Demo -->
+    <h3>Demo</h3>
+    <p>Show the result of applying linearc to an image.</p>
+    <h4>Code</h4>
+    <pre id="demo1"></pre>
+    <h4>Result</h4>
+    <div id="demo1result">
+        <canvas id="cas1"></canvas>
+        <canvas id="cas2"></canvas>
+        <canvas id="cas3"></canvas>
+    </div>
+
+    <script id="demo1code">
+        let cass = document.querySelectorAll('canvas');
+        Img.fromurl('../images/dog.png').then(img => {
+            img.show(cass[0]);
+            img.toarray().linearc([1/6, 2/6, 3/6], 0).show({ cas: cass[1], vmax: 255 });
+            img.linearc([-0.4, 1.9, -0.5], 0).show(cass[2],vmin=0,vmax=255);
+        });
+    </script>
+
+    <script>
+        var result = document.getElementById("demo1result");
+        var demo1 = document.getElementById("demo1");
+        var code = document.getElementById("demo1code");
+        demo1.innerText = code.innerText;
+    </script>
+
+</body>
+
+</html>

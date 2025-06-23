@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>vstack</title>
+        <script src="../Imagelib.js" ></script>
+    </head>
+    <body>
+        <h1>ImgArray.vstack</h1>
+
+        <h2>Declaration</h2>
+        <p>
+            vstack(...imgarrs)
+        </p>
+        <h2>Function Description</h2>
+        <p>
+            stack arrays in vertical direction.
+        </p>
+        <h2>Parameter Description</h2>
+        <ul>
+            <li>imgarrs: ImgArray objects to be stacked vertically.</li>
+        </ul>
+
+        <h2>Demons</h2>
+        <h3>Demo</h3>
+        <p>Show the result of stacking three images vertically.</p>
+        <h4>Code</h4>
+        <pre id="demo2"></pre>
+        <h4>Result</h4>
+        <div>
+            <canvas class="demo2result1"></canvas>
+        </div>
+        <script id="demo2code">
+            let a1 = new ImgArray({ width: 512 }).fill(255, 0);  //红色
+            let a2 = new ImgArray({ width: 512 }).fill(255, 1);  //绿色
+            let a3 = new ImgArray({ width: 512 }).fill(255, 2);  //蓝色
+            a1.vstack(a2, a3).show();  //竖直叠加，并显示为图像
+        </script>
+        <script>
+            var demo2 = document.getElementById('demo2');
+            var result2 = document.getElementsByClassName('demo2result1');
+            var code2 = document.getElementById('demo2code');
+            demo2.innerText = code2.innerText;
+        </script>
+
+    </body>
+
+</html>
